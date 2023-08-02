@@ -29,6 +29,15 @@ public interface TraineeClassRepository extends JpaRepository<TraineeClass , Lon
 		List <Map<String,Object>>  allDetailsOfTraineeClass(@Param("trainee_class_id")Long trainee_class_id);
 		
 		List<TraineeClass> findByStartDateBetween(Date from, Date to);
+
+		@Query(value=
+				" select section_name, count(*) as count "  
+				+ " from trainee_class "
+				+ " group by section_name "
+				+ " order by count(*) desc "
+				+ " limit 1 "
+				,nativeQuery = true)
+		 Map<String,Object>  highestCountBySection();
 	
 	
 

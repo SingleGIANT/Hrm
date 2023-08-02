@@ -101,7 +101,7 @@ public class WorkSheetController {
 
 			}
 
-			existingWorkSheet.setProjectTitle(workSheetDetails.getProjectTitle());
+			existingWorkSheet.setModuleName(workSheetDetails.getModuleName());
 			existingWorkSheet.setEmployeeNameId(workSheetDetails.getEmployeeNameId());
 			existingWorkSheet.setFromDate(workSheetDetails.getFromDate());
 			existingWorkSheet.setToDate(workSheetDetails.getToDate());

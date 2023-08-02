@@ -22,8 +22,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 	@Query(value = " select count(project_id) as total_projects,count(status) as incompleted_projects "
 			+ " from  project ", nativeQuery = true)
 	Map<String, Object> findByCountOfProjects();
-
-
+	
 	@Query(value = "select p.client_name, count(p.project_id) " + "from project as p "
 			+ "group by p.client_name", nativeQuery = true)
 	List<Object[]> getClientProjectCounts();
@@ -34,9 +33,10 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 			nativeQuery = true)
 	List<Map<String, Object>> findBytotalDuration();
 	
-
-
-
+	@Query(value = "select p.*,c.name"
+			+ " from project as p"
+			+ " join customer as c on c.customer_id=p.customer_id;", nativeQuery = true)
+	List<Map<String, Object>> getAllProject();
 
 
 }

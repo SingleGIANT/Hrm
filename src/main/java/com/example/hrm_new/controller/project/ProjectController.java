@@ -64,6 +64,10 @@ public class ProjectController {
 	public ResponseEntity<?> saveBank(@RequestBody Project project) {
 
 		try {
+			Date fromdate = project .getFromDate();
+			Date toDate = project.getToDate();
+			int totalDuration=calculateDuration(fromdate,toDate);
+			project.setTotalDuration(totalDuration);
 			project.setStatus(true);
 			projectservice.SaveorUpdate(project);
 
@@ -78,6 +82,11 @@ public class ProjectController {
 		}
 
 	}
+	  private int calculateDuration(Date date1, Date date2) {
+	        long diffInMillis = Math.abs(date2.getTime() - date1.getTime());
+	        int daysDifference = (int) (diffInMillis / (24 * 60 * 60 * 1000));
+	        return daysDifference;
+	    }
 
 	@RequestMapping("/project/{projectId}")
 
@@ -103,7 +112,7 @@ public class ProjectController {
 			}
 
 			existingProject.setProjectTitle(projectDetails.getProjectTitle());
-			existingProject.setClientName(projectDetails.getClientName());
+			existingProject.setCustomerId(projectDetails.getCustomerId());
 			existingProject.setContact(projectDetails.getContact());
 			existingProject.setLocation(projectDetails.getLocation());
 			existingProject.setTotalDuration(projectDetails.getTotalDuration());
@@ -134,6 +143,10 @@ public class ProjectController {
 
 		return ResponseEntity.ok("project deleted successfully");
 
+	}
+	@GetMapping("/project/view")
+	public List<Map<String,Object>>AllWorks(){
+		return repo.getAllProject();
 	}
 
 	@PostMapping("/findprojectbydate")

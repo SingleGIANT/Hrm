@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.hrm_new.entity.customer.Customer;
 import com.example.hrm_new.entity.organization.Company;
 import com.example.hrm_new.service.organization.CompanyService;
 
@@ -69,13 +70,28 @@ public class CompanyController {
 
 
 
-	@RequestMapping("/company/{companyId}")
 
-	private Optional<Company> getAnnouncement(@PathVariable(name = "companyId") long companyId) {
+	  @PutMapping("/company/or/{id}")
+	    public ResponseEntity<Boolean> toggleCustomerStatus(@PathVariable(name = "id") long id) {
+	        try {
+	        	Company customer = companyservice.findById(id);
+	            if (customer != null) {
+	                // Customer with the given id exists, toggle the status
+	                boolean currentStatus = customer.isStatus();
+	                customer.setStatus(!currentStatus);
+	                companyservice.SaveorUpdate(customer); // Save the updated customer
+	            } else {
+	                // Customer with the given id does not exist, return false
+	                return ResponseEntity.ok(false);
+	            }
 
-		return companyservice.getCompanyById(companyId);
+	            return ResponseEntity.ok(customer.isStatus()); // Return the new status (true or false)
+	        } catch (Exception e) {
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                    .body(false); // Set response to false in case of an error
+	        }
+	    }
 
-	}
 	
 	
 	@PutMapping("/company/editCompany/{companyId}")
@@ -134,5 +150,39 @@ public class CompanyController {
 
 	}
 	
+	@PutMapping("/company/or/{companyId}")
 
+	public ResponseEntity<Boolean> toggleComplaintsStatus(@PathVariable(name = "companyId") long companyId) {
+
+	try {
+
+	Company company = companyservice.findById(companyId);
+
+	if (company != null) {
+
+	// Toggle the status
+
+	boolean currentStatus = company.isStatus();
+
+	company.setStatus(!currentStatus);
+
+	companyservice.SaveorUpdate(company); // Save the updated company
+
+	} else {
+
+	return ResponseEntity.ok(false); // company with the given ID does not exist, return false
+
+	}
+
+	return ResponseEntity.ok(company.isStatus()); // Return the new status (true or false)
+
+	} catch (Exception e) {
+
+	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+
+	.body(false); // Set response to false in case of an error
+
+	}
+
+	}
 }
