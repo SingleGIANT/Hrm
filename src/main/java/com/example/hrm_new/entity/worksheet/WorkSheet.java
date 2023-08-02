@@ -14,7 +14,7 @@ public class WorkSheet {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long worksheetId;
-	private String projectTitle;
+	private String moduleName;
 	private long employeeNameId;
 	private Date fromDate;
 	private Date toDate;
@@ -24,6 +24,13 @@ public class WorkSheet {
 	private boolean status;
 	
 	
+	
+	public String getModuleName() {
+		return moduleName;
+	}
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
 	public WorkSheet() {
 		super();
 	}
@@ -38,12 +45,6 @@ public class WorkSheet {
 	}
 	public void setWorksheetId(long worksheetId) {
 		this.worksheetId = worksheetId;
-	}
-	public String getProjectTitle() {
-		return projectTitle;
-	}
-	public void setProjectTitle(String projectTitle) {
-		this.projectTitle = projectTitle;
 	}
 
 	public long getEmployeeNameId() {

@@ -179,6 +179,10 @@ public class TraineeClassController {
 		return repo.findByStartDateBetween(from, to);
 
 	}
+	@GetMapping("/highestcountbysection")
+	public Map<String, Object> highestCountBySection() {
+		return repo.highestCountBySection();
 
+	}
 
 }

@@ -207,4 +207,38 @@ public class ExpenseController {
 	public List<Map<String, Object>> yearlyexpense(){
 		return repo.yearlyExpense();
 	}
+	@PutMapping("/expense/or/{expenseId}")
+
+	public ResponseEntity<Boolean> toggleExpenseStatus(@PathVariable(name = "expenseId") long expenseId) {
+
+	try {
+
+		Expense expense = expenseService.findById(expenseId);
+
+	if (expense != null) {
+
+	// Toggle the status
+
+	boolean currentStatus = expense.isStatus();
+
+	expense.setStatus(!currentStatus);
+
+	expenseService.SaveorUpdate(expense); // Save the updated company
+
+	} else {
+
+	return ResponseEntity.ok(false); // company with the given ID does not exist, return false
+
+	}
+
+	return ResponseEntity.ok(expense.isStatus()); // Return the new status (true or false)
+
+	} catch (Exception e) {
+
+	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+
+	.body(false); // Set response to false in case of an error
+
+	}
+	}
 }

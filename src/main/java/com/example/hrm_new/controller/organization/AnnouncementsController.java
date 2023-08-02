@@ -150,5 +150,39 @@ public class AnnouncementsController {
 		LocalDate enddate = LocalDate.parse(requestBody.get("enddate").toString(), DateTimeFormatter.ISO_DATE);
 		return announcementtService.allAnnouncementsDetailsByFromDateAndToDate(startdate, enddate);
 	}
+	@PutMapping("/announcement/or/{announcementId}")
 
+	public ResponseEntity<Boolean> toggleAnnouncementStatus(@PathVariable(name = "announcementId") long announcementId) {
+
+	try {
+
+		Announcements announcement = announcementtService.findById(announcementId);
+
+	if (announcement != null) {
+
+	// Toggle the status
+
+	boolean currentStatus = announcement.isStatus();
+
+	announcement.setStatus(!currentStatus);
+
+	announcementtService.SaveorUpdate(announcement); // Save the updated company
+
+	} else {
+
+	return ResponseEntity.ok(false); // company with the given ID does not exist, return false
+
+	}
+
+	return ResponseEntity.ok(announcement.isStatus()); // Return the new status (true or false)
+
+	} catch (Exception e) {
+
+	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+
+	.body(false); // Set response to false in case of an error
+
+	}
+
+	}
 }
