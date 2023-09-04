@@ -1,6 +1,8 @@
 package com.example.hrm_new.controller.training;
 
-import java.sql.Date;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -89,9 +91,7 @@ public class TraineeClassController {
 	}
 		
 	@PutMapping("/traineeClassDetails/edittraineeClassDetails/{traineeClassId}")
-
 	public ResponseEntity<TraineeClass> updateTraineeClass(@PathVariable("traineeClassId") Long traineeClassId, @RequestBody TraineeClass traineeClassDetails) {
-
 		try {
 
 			TraineeClass existingTraineeClass= traineeClassservice.findById(traineeClassId);
@@ -174,11 +174,21 @@ public class TraineeClassController {
 		return traineeClasslist;
 
 	}
-	@PostMapping("/findtrainingbydate")
-	public List<TraineeClass> findByDateBetween(@RequestParam("fromdate") Date from, @RequestParam("todate") Date to) {
-		return repo.findByStartDateBetween(from, to);
+	 @PostMapping("/traineeClassDetails/date")
+	public List<TraineeClass> findByDateBetween(@RequestBody Map<String, Object> requestBody) {
+	    LocalDate fromdate = LocalDate.parse(requestBody.get("fromdate").toString(), DateTimeFormatter.ISO_DATE);
+	    LocalDate todate = LocalDate.parse(requestBody.get("todate").toString(), DateTimeFormatter.ISO_DATE);
+		return repo.findByStartDateBetween(fromdate, todate);
 
 	}
+	
+	@PostMapping("/findtrainingbydate")	
+	    public List<Map<String, Object>> getAllVoucherBetweenDates(
+				@RequestBody Map<String, Object> requestBody) {
+			LocalDate fromdate = LocalDate.parse(requestBody.get("fromdate").toString(), DateTimeFormatter.ISO_DATE);
+			LocalDate todate = LocalDate.parse(requestBody.get("todate").toString(), DateTimeFormatter.ISO_DATE);
+	        return repo.getAllpromotionsBetweenDates(fromdate, todate);
+	    }
 	@GetMapping("/highestcountbysection")
 	public Map<String, Object> highestCountBySection() {
 		return repo.highestCountBySection();

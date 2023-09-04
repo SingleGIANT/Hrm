@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +19,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.example.hrm_new.entity.employee.Resignations;
 import com.example.hrm_new.repository.employee.ResignationsRepository;
 import com.example.hrm_new.service.employee.ResignationsService;
@@ -76,25 +73,25 @@ public class ResignationsController {
 	        return daysDifference;
 	    }
 
-	@PutMapping("/resignations/or/{id}")
-	public ResponseEntity<?> getResignationsById(@PathVariable(name = "id") long id) {
-		try {
-			Resignations Resignations = service.getById(id);
-			if (Resignations != null) {
+	  @PutMapping("/resignations/or/{id}")
+	  public ResponseEntity<?> toggleResignationStatus(@PathVariable(name = "id") long id) {
+	      try {	        
+	          Resignations resignation = service.getById(id);
+	          if (resignation != null) {	         
+	              boolean currentStatus = resignation.isStatus();
+	              resignation.setStatus(!currentStatus);	            
+	              service.saveOrUpdate(resignation);            
+	              return ResponseEntity.ok(resignation.isStatus());
+	          } else {	            
+	              return ResponseEntity.ok(false);
+	          }
+	      } catch (Exception e) {
+	          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                  .body(false);
+	      }
+	  }
 
-                boolean currentStatus = Resignations.isStatus();
-                Resignations.setStatus(currentStatus);
-                service.saveOrUpdate(Resignations); 
-            } else {
-                return ResponseEntity.ok(false); 
-            }
-
-            return ResponseEntity.ok(Resignations.isStatus());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(false);
-        }
- }
+	
 
 //	@PutMapping("/resignations/edit/{id}")
 //	public ResponseEntity<Resignations> updateResignations(@PathVariable("id") long id, @RequestBody Resignations Resignations) {
@@ -181,10 +178,10 @@ public class ResignationsController {
 	///////////////18////////////////////
 	
 	@PostMapping("/resignations/date")
-	public List<Map<String, Object>> getAllVoucherBetweenDates(@RequestParam Map<String, Object> requestBody) {
-		LocalDate startDate = LocalDate.parse(requestBody.get("startDate").toString(), DateTimeFormatter.ISO_DATE);
-		LocalDate endDate = LocalDate.parse(requestBody.get("endDate").toString(), DateTimeFormatter.ISO_DATE);
-		return repo.getAllReceiptBetweenDates(startDate, endDate);
+	public List<Map<String, Object>> getAllVoucherBetweenDates( @RequestBody Map<String, Object> requestBody) {
+	    LocalDate startDate = LocalDate.parse(requestBody.get("startDate").toString(), DateTimeFormatter.ISO_DATE);
+	    LocalDate endDate = LocalDate.parse(requestBody.get("endDate").toString(), DateTimeFormatter.ISO_DATE);
+		return repo.getAllReceiptBetweenDate(startDate, endDate);
 	}
 	
 	/////////////// 19 /////////////////////

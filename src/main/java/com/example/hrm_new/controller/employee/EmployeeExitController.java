@@ -45,25 +45,6 @@ public class EmployeeExitController {
 		}
 	}
 
-//	
-//	@PostMapping("/employeeexit/save")
-//	public ResponseEntity<String> saveEmployeeExit(@RequestBody EmployeeExit employeeExit,@RequestBody Employee empolyee) {
-//		try {
-//			
-//			employeeExit.setStatus(false);
-//			if(employeeExit.isStatus() ==false){
-//				if(employeeExit.getEmployeeId() == empolyee.getEmployeeId())
-//				empolyee.setStatus(false);
-//			}
-//			
-//			service.saveOrUpdate(employeeExit);
-//			
-//			return ResponseEntity.ok("EmployeeExit saved with id: " + employeeExit.getEmployeeExitId());
-//		} catch (Exception e) {
-//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//					.body("Error saving EmployeeExit: " + e.getMessage());
-//		}
-//	}
 	@Autowired
 	private EmployeeService employeeService;
 
@@ -95,15 +76,14 @@ public class EmployeeExitController {
 			if (EmployeeExit != null) {
 				 boolean currentStatus = EmployeeExit.isStatus();
 				 EmployeeExit.setStatus(!currentStatus);
-	                service.saveOrUpdate(EmployeeExit); // Save the updated complaints
+	                service.saveOrUpdate(EmployeeExit); 
 	            } else {
-	                return ResponseEntity.ok(false); // Complaints with the given ID does not exist, return false
+	                return ResponseEntity.ok(false); 
 	            }
-
-	            return ResponseEntity.ok(EmployeeExit.isStatus()); // Return the new status (true or false)
+	            return ResponseEntity.ok(EmployeeExit.isStatus());
 	        } catch (Exception e) {
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                    .body(false); // Set response to false in case of an error
+	                    .body(false); 
 	        }
 	    }
 

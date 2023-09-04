@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.hrm_new.entity.customer.Customer;
 import com.example.hrm_new.entity.organization.Expense;
 import com.example.hrm_new.repository.organization.ExpenseRepository;
 
@@ -55,9 +56,10 @@ public class ExpenseService {
 		return expenseRepository.allDetailsOfExpense(expense_id);
 		
 	}
-	public List<Map<String, Object>> allExpenseDetailsByDate(LocalDate date) {
-		return expenseRepository.allExpenseDetailsByDate(date);
-	}
+	
+//	public List<Map<String, Object>> allExpenseDetailsByDate(LocalDate date) {
+//		return expenseRepository.allExpenseDetailsByDate(date);
+//	}
 	
 	public List<Map<String, Object>> dailyExpenseByCurrentDate() {
 		return expenseRepository.dailyExpenseByCurrentDate();

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.hrm_new.entity.organization.Company;
 import com.example.hrm_new.entity.training.TraineeDetails;
 import com.example.hrm_new.entity.worksheet.WorkSheet;
 import com.example.hrm_new.repository.training.TraineeDetailsRepository;
@@ -85,9 +86,31 @@ public class TraineeDetailsController {
 		return traineeDetailsservice.getTraineeDetailsById(traineeDetailsId);
 
 	}
+	
+	
+	 @PutMapping("/TraineeDetails/or/{traineeDetailsId}")
+	    public ResponseEntity<Boolean> toggleCustomerStatus(@PathVariable(name = "traineeDetailsId") long traineeDetailsId) {
+	        try {
+	        	TraineeDetails traineeDetails = traineeDetailsservice.findById(traineeDetailsId);
+	            if (traineeDetails != null) {
+	                // Customer with the given id exists, toggle the status
+	                boolean currentStatus = traineeDetails.isStatus();
+	                traineeDetails.setStatus(!currentStatus);
+	                traineeDetailsservice.SaveorUpdate(traineeDetails); // Save the updated customer
+	            } else {
+	                // Customer with the given id does not exist, return false
+	                return ResponseEntity.ok(false);
+	            }
+
+	            return ResponseEntity.ok(traineeDetails.isStatus()); // Return the new status (true or false)
+	        } catch (Exception e) {
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                    .body(false); // Set response to false in case of an error
+	        }
+	    }
+
 		
 	@PutMapping("/TraineeDetails/editTraineeDetails/{traineeDetailsId}")
-
 	public ResponseEntity<TraineeDetails> updateTraineeDetails(@PathVariable("traineeDetailsId") Long traineeDetailsId, @RequestBody TraineeDetails workSheetDetails) {
 
 		try {
@@ -128,7 +151,6 @@ public class TraineeDetailsController {
 	}
 	
 	@DeleteMapping("/TraineeDetails/TraineeDetailsdelete/{traineeDetailsId}")
-
 	public ResponseEntity<String> deleteTraineeDetails(@PathVariable("traineeDetailsId") Long traineeDetailsId) {
 
 		traineeDetailsservice.deleteTraineeDetailsById(traineeDetailsId);

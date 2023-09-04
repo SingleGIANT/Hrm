@@ -1,6 +1,7 @@
 package com.example.hrm_new.controller.employee;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.example.hrm_new.entity.employee.Employee;
 import com.example.hrm_new.entity.employee.Terminations;
 import com.example.hrm_new.repository.employee.TerminationsRepository;
 import com.example.hrm_new.service.employee.EmployeeService;
@@ -48,6 +51,15 @@ public class TerminationsController {
 	@PostMapping("/terminations/save")
 	public ResponseEntity<String> saveTerminations(@RequestBody Terminations Terminations) {
 		try {
+			
+			Terminations.setStatus(false);
+
+	            Long employeeId = Terminations.getEmployeeId();
+	            Employee employee = employeeService.getEmployeeById(employeeId);
+	            if (employee != null) {
+	                employee.setStatus(false);
+	                employeeService.saveOrUpdate(employee);
+	            }
 			Terminations.setStatus(true);
 			service.saveOrUpdate(Terminations);
 			return ResponseEntity.ok("Terminations saved with id: " + Terminations.getTerminationsId());
@@ -63,7 +75,7 @@ public class TerminationsController {
 			Terminations Terminations = service.getById(id);
 			if (Terminations != null) {
 				boolean currentStatus = Terminations.isStatus();
-				Terminations.setStatus(currentStatus);
+				Terminations.setStatus(!currentStatus);
                 service.saveOrUpdate(Terminations); // Save the updated complaints
             } else {
                 return ResponseEntity.ok(false); // Complaints with the given ID does not exist, return false
@@ -136,8 +148,9 @@ public class TerminationsController {
 	
 	@PostMapping("/terminations/date")
 	public List<Map<String, Object>> getAllVoucherBetweenDates(
-			@RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-			@RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+			@RequestBody Map<String, Object> requestBody) {
+	    LocalDate startDate = LocalDate.parse(requestBody.get("startDate").toString(), DateTimeFormatter.ISO_DATE);
+	    LocalDate endDate = LocalDate.parse(requestBody.get("endDate").toString(), DateTimeFormatter.ISO_DATE);
 		return repo.getAllpromotionsBetweenDates(startDate, endDate);
 	}
 

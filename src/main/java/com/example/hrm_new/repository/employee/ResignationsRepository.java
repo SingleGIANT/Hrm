@@ -33,7 +33,7 @@ public interface ResignationsRepository extends JpaRepository<Resignations, Long
 			+ "			 from resignations as d"
 			+ "			  join employee as e on e.employee_id=d.employee_id"
 			+ "              where d.resignations_date between :startDate and :endDate", nativeQuery = true)
-	 List<Map<String, Object>> getAllReceiptBetweenDates( LocalDate startDate, LocalDate endDate);
+	 List<Map<String, Object>> getAllReceiptBetweenDate( LocalDate startDate, LocalDate endDate);
 	
 	@Query(value = "select e.first_name, e.last_name, d.resignations_id, d.notice_date, d.reason, d.resignations_date, d.status,"
 			+ "       datediff( d.resignations_date,d.notice_date) as duration_date"

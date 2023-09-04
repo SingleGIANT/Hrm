@@ -14,7 +14,7 @@ public class PayRoll {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long payRollId;
-	private long employeeNameId;
+	private long employeeId;
 	private Date date;
 	private long totalSalary;
 	private long paymentTypeId;
@@ -23,8 +23,6 @@ public class PayRoll {
 	private long allowance;
 	private int noOfDaysWorkingInaMonth;
 	private boolean status;
-	
-	
 	
 	public PayRoll() {
 		super();
@@ -35,13 +33,7 @@ public class PayRoll {
 	public void setPayRollId(long payRollId) {
 		this.payRollId = payRollId;
 	}
-	public long getEmployeeNameId() {
-		return employeeNameId;
-	}
-	public void setEmployeeNameId(long employeeNameId) {
-		this.employeeNameId = employeeNameId;
-	}
-	public Date getDate() {
+		public Date getDate() {
 		return date;
 	}
 	public void setDate(Date date) {
@@ -88,6 +80,12 @@ public class PayRoll {
 	}
 	public void setStatus(boolean status) {
 		this.status = status;
+	}
+	public long getEmployeeId() {
+		return employeeId;
+	}
+	public void setEmployeeId(long employeeId) {
+		this.employeeId = employeeId;
 	}
 	
 	

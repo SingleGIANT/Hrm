@@ -1,16 +1,14 @@
 package com.example.hrm_new.controller.organization;
 
-import java.sql.Date;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,10 +21,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.example.hrm_new.entity.organization.Announcements;
 import com.example.hrm_new.repository.organization.AnnouncementsRepository;
 import com.example.hrm_new.service.organization.AnnouncementsService;
+
 
 @RestController
 @CrossOrigin
@@ -64,12 +62,54 @@ public class AnnouncementsController {
 		}
 
 	}
+	
+//	@PostMapping("/announcement/save")
+//	public ResponseEntity<?> saveAnnouncement(@RequestBody Announcements announcement) {
+//	    try {
+//	        // Check if fromDate is later than toDate
+//	        if (announcement.getFromDate() != null && announcement.getToDate() != null &&
+//	            announcement.getFromDate().after(announcement.getToDate())) {
+//	            String errorMessage = "FromDate cannot be later than ToDate.";
+//	            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+//	        }
+//	        
+//	        announcement.setStatus(true);
+//	        announcementtService.SaveorUpdate(announcement);
+//	        return ResponseEntity.status(HttpStatus.CREATED).body("Announcement details saved successfully.");
+//	    } catch (Exception e) {
+//	        String errorMessage = "An error occurred while saving announcement details.";
+//	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
+//	    }
+//	}
+
 
 	@RequestMapping("/announcement/{announcementId}")
 	private Optional<Announcements> getAnnouncement(@PathVariable(name = "announcementId") long announcementId) {
 		return announcementtService.getAnnouncementsById(announcementId);
 
 	}
+
+	
+	@PutMapping("/announcement/or/{announcement_id}")
+    public ResponseEntity<Boolean> toggleCustomerStatus(@PathVariable(name = "announcement_id") long announcement_id) {
+        try {
+        	Announcements announcement = announcementtService.findById(announcement_id);
+            if (announcement != null) {
+                // Customer with the given id exists, toggle the status
+                boolean currentStatus = announcement.isStatus();
+                announcement.setStatus(!currentStatus);
+                announcementtService.SaveorUpdate(announcement); // Save the updated customer
+            } else {
+                // Customer with the given id does not exist, return false
+                return ResponseEntity.ok(false);
+            }
+
+            return ResponseEntity.ok(announcement.isStatus()); // Return the new status (true or false)
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(false); // Set response to false in case of an error
+        }
+    }
 
 	@PutMapping("/announcement/editAnnouncement/{announcementId}")
 	public ResponseEntity<Announcements> updateAnnouncement(@PathVariable("announcementId") Long announcementId,
@@ -84,7 +124,7 @@ public class AnnouncementsController {
 			existingAnnouncement.setToDate(announcementDetails.getToDate());
 			existingAnnouncement.setCompanyId(announcementDetails.getCompanyId());
 			existingAnnouncement.setInformedBy(announcementDetails.getInformedBy());
-			existingAnnouncement.setStatus(announcementDetails.isStatus());
+			
 			announcementtService.save(existingAnnouncement);
 			return ResponseEntity.ok(existingAnnouncement);
 		} catch (Exception e) {
@@ -143,46 +183,20 @@ public class AnnouncementsController {
 		return announcementtService.allAnnouncementsDetailsByToDate(enddate);
 	}
 
-	@PostMapping("/announcements/correctdate")
-	public List<Map<String, Object>> allAnnouncementsDetailsByFromDateAndToDate(
+	@PostMapping("/announcements1/correctdate")
+	public List<Map<String, Object>> allAnnouncementsDetailsByFromDateAndToDate1(
 			@RequestBody Map<String, Object> requestBody) {
 		LocalDate startdate = LocalDate.parse(requestBody.get("startdate").toString(), DateTimeFormatter.ISO_DATE);
 		LocalDate enddate = LocalDate.parse(requestBody.get("enddate").toString(), DateTimeFormatter.ISO_DATE);
 		return announcementtService.allAnnouncementsDetailsByFromDateAndToDate(startdate, enddate);
 	}
-	@PutMapping("/announcement/or/{announcementId}")
-
-	public ResponseEntity<Boolean> toggleAnnouncementStatus(@PathVariable(name = "announcementId") long announcementId) {
-
-	try {
-
-		Announcements announcement = announcementtService.findById(announcementId);
-
-	if (announcement != null) {
-
-	// Toggle the status
-
-	boolean currentStatus = announcement.isStatus();
-
-	announcement.setStatus(!currentStatus);
-
-	announcementtService.SaveorUpdate(announcement); // Save the updated company
-
-	} else {
-
-	return ResponseEntity.ok(false); // company with the given ID does not exist, return false
-
+	
+	@PostMapping("/announcements/correctdate")
+	public List<Map<String, Object>> allAnnouncementsDetailsByFromDateAndToDate(
+			@RequestBody Map<String, Object> requestBody) {
+		LocalDate startdate = LocalDate.parse(requestBody.get("startdate").toString(), DateTimeFormatter.ISO_DATE);
+		LocalDate enddate = LocalDate.parse(requestBody.get("enddate").toString(), DateTimeFormatter.ISO_DATE);
+		return repo.allAnnouncementsDetailsByFromDateAndToDate1(startdate, enddate);
 	}
 
-	return ResponseEntity.ok(announcement.isStatus()); // Return the new status (true or false)
-
-	} catch (Exception e) {
-
-	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-
-	.body(false); // Set response to false in case of an error
-
-	}
-
-	}
 }

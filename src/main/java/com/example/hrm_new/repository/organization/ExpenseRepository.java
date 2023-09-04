@@ -29,24 +29,30 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long>{
 				,nativeQuery = true)
 		List <Map<String,Object>>  allDetailsOfExpense(@Param("expense_id")Long expense_id);
 	
+		  @Query(value =
+		            " select e.*,et.expense_type"
+		            + "				 from expense as e"
+		            + "                 join expense_type as et on et.expense_type_id=e.expense_type_id" 
+		          +  "  WHERE e.date BETWEEN :startdate AND :enddate",nativeQuery = true)
+		    List<Map<String, Object>> allExpenseDetailsByDate(
+		            @Param("startdate") LocalDate startdate, @Param("enddate") LocalDate enddate);
 		@Query(value =
-				" select e.*,c.company_name "
-				+ " from expense as e "
-				+ " join company as c on c.company_id=e.company_id where e.date=:date "
-				, nativeQuery = true)
-		List<Map<String, Object>> allExpenseDetailsByDate(LocalDate date);
-		
-		@Query(value =
-				" select date,sum(amount)"
-				+ " from expense where date=current_date()"
-				+ " group by date "
-			
+				"  SELECT e.*, et.expense_type"
+				+ " FROM expense AS e"
+				+ " JOIN expense_type AS et ON et.expense_type_id = e.expense_type_id"
+				+ " WHERE e.date = CURRENT_DATE()"							
 				, nativeQuery = true)
 		List<Map<String, Object>> dailyExpenseByCurrentDate();
-		
 		@Query(value =
-				" select  e.*,month(date)"
-				+ " from expense as e "
+				"   select date,sum(amount)"
+				+ "			 from expense where date=current_date()"
+				+ "				 group by date"							
+				, nativeQuery = true)
+		List<Map<String, Object>> dailyExpenseByCurrentDate1();
+		@Query(value =
+				" select  e.*,month(date),et.expense_type"
+				+ "				 from expense as e"
+				+ "                 JOIN expense_type as et on et.expense_type_id= e.expense_type_id "
 				
 				, nativeQuery = true)
 		List<Map<String, Object>> mothlyExpenseDetails();
@@ -61,8 +67,9 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long>{
 		List<Map<String, Object>> monthlyExpense();
 		
 		@Query(value =
-				" select  e.*,year(date)"
+				" select  e.*,year(date),et.expense_type"
 				+ " from expense as e "
+				+ " join expense_type as et on et.expense_type_id=e.expense_type_id"
 				
 				, nativeQuery = true)
 		List<Map<String, Object>> yearlyExpenseDetails();
@@ -76,6 +83,14 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long>{
 				
 				, nativeQuery = true)
 		List<Map<String, Object>> yearlyExpense();
+		@Query(value =
+				   "    select e.*,et.expense_type"
+				   + "			 from expense as e"
+				   + "	     join expense_type as et on et.expense_type_id=e.expense_type_id"
+				   + "          where year(date)=:year and MONTHNAME(date)=:monthname "
+				
+				, nativeQuery = true)
+		List<Map<String, Object>> findByYearAndMonth(Integer year, String monthname);
 		
 	
 }

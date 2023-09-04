@@ -2,11 +2,8 @@ package com.example.hrm_new.service.assest;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.example.hrm_new.entity.Assest.Assest;
 import com.example.hrm_new.repository.assest.AssestRepository;
 
@@ -39,10 +36,9 @@ public class AssestService {
 		Repo.deleteById(assest_id);
 	}
 
-	public Optional<Assest> getAssestsById(Long assest_id) {
-		return Repo.findById(assest_id);
-
-	}
+	 public Assest getById(long id) {
+	        return Repo.findById(id).get();
+	    }
 
 	public List<Map<String, Object>> allAssestDetails() {
 		return Repo.allAsesstDetails();

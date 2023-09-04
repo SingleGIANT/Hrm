@@ -1,6 +1,7 @@
 package com.example.hrm_new.controller.employee;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -145,9 +146,9 @@ public class ComplaintsController {
 	///////////////// 23 ///////////////////////
 	 @PostMapping("/complaints/date")
 	    public List<Map<String, Object>> getAllVoucherBetweenDates(
-	            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-	            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
-	    ) {
+				@RequestBody Map<String, Object> requestBody) {
+			LocalDate startDate = LocalDate.parse(requestBody.get("startDate").toString(), DateTimeFormatter.ISO_DATE);
+			LocalDate endDate = LocalDate.parse(requestBody.get("endDate").toString(), DateTimeFormatter.ISO_DATE);
 	        return repo.getAllpromotionsBetweenDates(startDate, endDate);
 	    }
 	 

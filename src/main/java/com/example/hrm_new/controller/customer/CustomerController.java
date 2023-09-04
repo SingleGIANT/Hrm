@@ -1,6 +1,8 @@
 package com.example.hrm_new.controller.customer;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,18 +38,35 @@ public class CustomerController {
 	@Autowired
 	private CustomerRepository repo;
 
-	@GetMapping("/customers")
-	public ResponseEntity<?> getCustomers() {
+//	@GetMapping("/customers")
+//	public ResponseEntity<?> getCustomers() {
+//	
+//		try {
+//			
+//			List<Customer> Customers = service.listAll();
+//			return ResponseEntity.ok(Customers);
+//		} catch (Exception e) {
+//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//					.body("Error retrieving Customers: " + e.getMessage());
+//		}
+//	}
 	
-		try {
-			
-			List<Customer> Customers = service.listAll();
-			return ResponseEntity.ok(Customers);
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Error retrieving Customers: " + e.getMessage());
-		}
-	}
+	 @GetMapping("/customers")
+	    public ResponseEntity<?> getCustomers() {
+
+	        try {
+	            List<Customer> customers = service.listAll();
+	            
+	            // Sort the list of customers in descending order based on customerId
+	            Collections.sort(customers, Comparator.comparing(Customer::getCustomerId).reversed());
+	            
+	            return ResponseEntity.ok(customers);
+	        } catch (Exception e) {
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                    .body("Error retrieving customers: " + e.getMessage());
+	        }
+	    }
+
 
 	@PostMapping("/customers/save")
     public ResponseEntity<String> saveCustomer(@RequestBody Customer customer) {
@@ -62,20 +81,20 @@ public class CustomerController {
                     .body("Error saving Customer: " + e.getMessage());
         }
     }
-//	@RequestMapping("/customers/{id}")
-//	public ResponseEntity<?> getCustomerById(@PathVariable(name = "id") long id) {
-//		try {
-//			Customer Customer = service.getById(id);
-//			if (Customer != null) {
-//				return ResponseEntity.ok(Customer);
-//			} else {
-//				return ResponseEntity.notFound().build();
-//			}
-//		} catch (Exception e) {
-//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//					.body("Error retrieving Customer: " + e.getMessage());
-//		}
-//	}
+	@RequestMapping("/customers/{id}")
+	public ResponseEntity<?> getCustomerById(@PathVariable(name = "id") long id) {
+		try {
+			Customer Customer = service.getById(id);
+			if (Customer != null) {
+				return ResponseEntity.ok(Customer);
+			} else {
+				return ResponseEntity.notFound().build();
+			}
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error retrieving Customer: " + e.getMessage());
+		}
+	}
 	
 	
 	  @PutMapping("/customers/or/{id}")
@@ -83,19 +102,19 @@ public class CustomerController {
 	        try {
 	            Customer customer = service.getById(id);
 	            if (customer != null) {
-	                // Customer with the given id exists, toggle the status
+	               
 	                boolean currentStatus = customer.isStatus();
 	                customer.setStatus(!currentStatus);
-	                service.saveOrUpdate(customer); // Save the updated customer
+	                service.saveOrUpdate(customer); 
 	            } else {
-	                // Customer with the given id does not exist, return false
+	                
 	                return ResponseEntity.ok(false);
 	            }
 
-	            return ResponseEntity.ok(customer.isStatus()); // Return the new status (true or false)
+	            return ResponseEntity.ok(customer.isStatus()); 
 	        } catch (Exception e) {
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                    .body(false); // Set response to false in case of an error
+	                    .body(false); 
 	        }
 	    }
 
@@ -108,7 +127,7 @@ public class CustomerController {
 			if (existingCustomer == null) {
 				return ResponseEntity.notFound().build();
 			}
-//			Customer.setStatus(true);
+			
 			existingCustomer.setAddress(Customer.getAddress());
 			existingCustomer.setCity(Customer.getCity());
 			existingCustomer.setName(Customer.getName());
@@ -120,7 +139,7 @@ public class CustomerController {
 			existingCustomer.setDate(Customer.getDate());
 			existingCustomer.setPhoneNo1(Customer.getPhoneNo1());
 			existingCustomer.setPhoneNo2(Customer.getPhoneNo2());
-//			existingCustomer.setStatus(Customer.isStatus());
+
 
 			service.saveOrUpdate(existingCustomer);
 			return ResponseEntity.ok(existingCustomer);

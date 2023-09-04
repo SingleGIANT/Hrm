@@ -1,8 +1,9 @@
 package com.example.hrm_new.controller.employee;
 
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,19 +26,14 @@ import com.example.hrm_new.entity.employee.Transfer;
 import com.example.hrm_new.repository.employee.TransferRepository;
 import com.example.hrm_new.service.employee.TransferService;
 
-
-
-
-
-
 @CrossOrigin
 @RestController
 public class TransferController {
 	@Autowired
-    private  TransferService service;
-	
+	private TransferService service;
+
 	@Autowired
-    private  TransferRepository repo;
+	private TransferRepository repo;
 
 	@GetMapping("/transfer")
 	public ResponseEntity<?> getTransfers() {
@@ -50,8 +46,6 @@ public class TransferController {
 		}
 	}
 
-
-	
 	@PostMapping("/transfer/save")
 	public ResponseEntity<String> saveTransfer(@RequestBody Transfer Transfer) {
 		try {
@@ -65,24 +59,25 @@ public class TransferController {
 	}
 
 	@PutMapping("/transfer/or/{id}")
-    public ResponseEntity<Boolean> toggleComplaintsStatus(@PathVariable(name = "id") long id) {
-        try {
-        	Transfer complaints = service.getById(id);
-            if (complaints != null) {
-          
-                boolean currentStatus = complaints.isStatus();
-                complaints.setStatus(currentStatus);
-                service.saveOrUpdate(complaints); 
-            } else {
-                return ResponseEntity.ok(false); 
-            }
+	public ResponseEntity<Boolean> toggleTransferStatus(@PathVariable(name = "id") long id) {
+		try {
+			Transfer transfer = service.getById(id);
 
-            return ResponseEntity.ok(complaints.isStatus()); // Return the new status (true or false)
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(false);
-        }
- }
+			if (transfer != null) {				
+				boolean currentStatus = transfer.isStatus();
+				transfer.setStatus(!currentStatus);
+				service.saveOrUpdate(transfer);
+
+				// Return the updated status
+				return ResponseEntity.ok(transfer.isStatus());
+			} else {
+				// If no Transfer found with the given ID, return false
+				return ResponseEntity.ok(false);
+			}
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+		}
+	}
 
 	@PutMapping("/transfer/edit/{id}")
 	public ResponseEntity<Transfer> updateTransfer(@PathVariable("id") long id, @RequestBody Transfer Transfer) {
@@ -98,9 +93,6 @@ public class TransferController {
 			existingTransfer.setLocation(Transfer.getLocation());
 			existingTransfer.setDesignationName(Transfer.getDesignationName());
 			existingTransfer.setStatus(Transfer.isStatus());
-			
-			
-			
 
 			service.saveOrUpdate(existingTransfer);
 			return ResponseEntity.ok(existingTransfer);
@@ -119,56 +111,42 @@ public class TransferController {
 					.body("Error deleting Transfer: " + e.getMessage());
 		}
 	}
-	
+
 	@GetMapping("/transfer/view")
-	public List<Map<String,Object>>GoodAllReansfer(){
+	public List<Map<String, Object>> GoodAllReansfer() {
 		return service.AllTravel();
 	}
-	
+
 	@GetMapping("/transfer/{employee_id}")
 	private List<Map<String, Object>> idbasedAnnouncement(@PathVariable("employee_id") Long employee_id) {
-	    List<Map<String, Object>> announcementlist = new ArrayList<>();
-	    List<Map<String, Object>> list = repo.allDetailsOfAnnouncement(employee_id);
-	    Map<String, List<Map<String, Object>>> announcementGroupMap = StreamSupport.stream(list.spliterator(), false)
-	            .collect(Collectors.groupingBy(action -> String.valueOf(action.get("employee_id"))));
+		List<Map<String, Object>> announcementlist = new ArrayList<>();
+		List<Map<String, Object>> list = repo.allDetailsOfAnnouncement(employee_id);
+		Map<String, List<Map<String, Object>>> announcementGroupMap = StreamSupport.stream(list.spliterator(), false)
+				.collect(Collectors.groupingBy(action -> String.valueOf(action.get("employee_id"))));
 
-	    for (Map.Entry<String, List<Map<String, Object>>> totalList : announcementGroupMap.entrySet()) {
-	        Map<String, Object> announcementMap = new HashMap<>();
-	        announcementMap.put("employee_id", totalList.getKey());
-	        announcementMap.put("location", totalList.getValue().get(0).get("location"));
-	        announcementMap.put("Announcement Details", totalList.getValue());
-	        announcementlist.add(announcementMap);
-	    }
-	    return announcementlist;
+		for (Map.Entry<String, List<Map<String, Object>>> totalList : announcementGroupMap.entrySet()) {
+			Map<String, Object> announcementMap = new HashMap<>();
+			announcementMap.put("employee_id", totalList.getKey());
+			announcementMap.put("location", totalList.getValue().get(0).get("location"));
+			announcementMap.put("Announcement Details", totalList.getValue());
+			announcementlist.add(announcementMap);
+		}
+		return announcementlist;
 	}
-	
-	/////////////16 /////////////
-	
-	
-	@PostMapping("/transfers/date")
-	public List<Map<String, Object>> getEmployeeTransfersByDate(@RequestParam("date") String transferDateStr) {
-	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-	    java.util.Date parsedDate;
-	    try {
-	        parsedDate = dateFormat.parse(transferDateStr);
-	    } catch (ParseException e) {
-	        e.printStackTrace();
-	        return new ArrayList<>();
-	    }
-	    List<Map<String, Object>> transfers = repo.findAwardsByEmployeeIdAndDate(parsedDate);
-	    List<Map<String, Object>> result = new ArrayList<>();
-	    result.addAll(transfers);
 
-	    return result;
+	///////////// 16 /////////////
+
+	@PostMapping("/transfers/date")
+	public List<Map<String, Object>> getAllVoucherBetweenDates(
+			@RequestBody Map<String, Object> requestBody) {
+	    LocalDate startDate = LocalDate.parse(requestBody.get("startDate").toString(), DateTimeFormatter.ISO_DATE);
+	    LocalDate endDate = LocalDate.parse(requestBody.get("endDate").toString(), DateTimeFormatter.ISO_DATE);
+		return repo.getAllpromotionsBetweenDates(startDate, endDate);
 	}
 ///////////////17//////////////////////////
 	@GetMapping("/transfers/count")
-	private List<Map<String, Object>>Allcount(){
+	private List<Map<String, Object>> Allcount() {
 		return repo.getEmployeeTransferCountByYear();
 	}
-
-
-
-
 
 }

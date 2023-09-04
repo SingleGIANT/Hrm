@@ -27,7 +27,6 @@ public class ExpenseTypeController {
 	private ExpenseTypeService expenseTypeService;
 
 	@GetMapping("/expensetype")
-
 	public ResponseEntity<?> getDetails() {
 
 		try {
@@ -47,7 +46,6 @@ public class ExpenseTypeController {
 	}
 
 	@PostMapping("/ExpenseType/save")
-
 	public ResponseEntity<?> saveBank(@RequestBody ExpenseType expenseType) {
 
 		try {

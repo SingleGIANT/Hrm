@@ -23,6 +23,7 @@ public class Awards {
     private long awardsId;   
     private String description;
     private String gift;
+    private String awardsType;
     private Date date;
     private int cash;
     private long employeeId;
@@ -32,6 +33,16 @@ public class Awards {
     private boolean status;  
 	
 	
+	public String getAwardsType() {
+		return awardsType;
+	}
+
+
+	public void setAwardsType(String awardsType) {
+		this.awardsType = awardsType;
+	}
+
+
 	public Awards() {
 		super();
 	}
@@ -115,6 +126,10 @@ public class Awards {
 	public void setStatus(boolean status) {
 		this.status = status;
 	}
+
+
+	
+
 	
 	
 	

@@ -15,7 +15,7 @@ public class WorkSheet {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long worksheetId;
 	private String moduleName;
-	private long employeeNameId;
+	private long employeeId;
 	private Date fromDate;
 	private Date toDate;
 	private int totalDuration;
@@ -46,12 +46,11 @@ public class WorkSheet {
 	public void setWorksheetId(long worksheetId) {
 		this.worksheetId = worksheetId;
 	}
-
-	public long getEmployeeNameId() {
-		return employeeNameId;
+	public long getEmployeeId() {
+		return employeeId;
 	}
-	public void setEmployeeNameId(long employeeNameId) {
-		this.employeeNameId = employeeNameId;
+	public void setEmployeeId(long employeeId) {
+		this.employeeId = employeeId;
 	}
 	public Date getFromDate() {
 		return fromDate;

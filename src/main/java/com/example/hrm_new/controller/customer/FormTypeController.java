@@ -1,5 +1,7 @@
 package com.example.hrm_new.controller.customer;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.hrm_new.entity.customer.Customer;
 import com.example.hrm_new.entity.customer.FormType;
 import com.example.hrm_new.service.customer.FormTypeService;
 
@@ -32,6 +35,7 @@ public class FormTypeController {
 		try {
 			
 			List<FormType> FormTypes = service.listAll();
+			  Collections.sort(FormTypes, Comparator.comparing(FormType::getFormTypeId).reversed());
 			return ResponseEntity.ok(FormTypes);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

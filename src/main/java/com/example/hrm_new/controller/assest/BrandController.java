@@ -1,6 +1,10 @@
 package com.example.hrm_new.controller.assest;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.hrm_new.entity.Assest.Assest;
 import com.example.hrm_new.entity.Assest.Brand;
 import com.example.hrm_new.service.assest.BrandService;
 
@@ -34,8 +39,11 @@ public class BrandController {
 		try {
 
 			Iterable<Brand> assestDetails = brandService.listAll();
+			 List<Brand> sortedAssets = StreamSupport.stream(assestDetails.spliterator(), false)
+		                .sorted(Comparator.comparing(Brand::getBrandId).reversed())
+		                .collect(Collectors.toList());
 
-			return new ResponseEntity<>(assestDetails, HttpStatus.OK);
+			return new ResponseEntity<>(sortedAssets, HttpStatus.OK);
 
 		} catch (Exception e) {
 

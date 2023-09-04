@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.hrm_new.entity.employee.ErrorResponse;
+
 import com.example.hrm_new.entity.employee.Role;
 import com.example.hrm_new.repository.employee.RoleRepository;
 import com.example.hrm_new.service.employee.RoleService;
@@ -56,45 +56,26 @@ public class RoleController {
 
 	}
 
-//	@PostMapping("/role/save")
-//
-//	public ResponseEntity<?> saveRole(@RequestBody Role Role) {
-//
-//		try {
-//
-//			RoleService.SaveorUpdate(Role);
-//
-//			return ResponseEntity.status(HttpStatus.CREATED).body("Role details saved successfully.");
-//
-//		} catch (Exception e) {
-//
-//			String errorMessage = "An error occurred while saving Role details.";
-//
-//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
-//
-//		}
-//
-//	}
-	@GetMapping("/role1")
-	public ResponseEntity<?> getDetails1() {
-	    try {
-	        Iterable<Role> allRoles = RoleService.listAll();
-	        List<Role> trueStatusRoles = new ArrayList<>();
+	@PostMapping("/role/save")
 
-	        // Filter roles with a true Status
-	        for (Role role : allRoles) {
-	            if (role.isStatus()) {
-	                trueStatusRoles.add(role);
-	            }
-	        }
+	public ResponseEntity<?> saveRole(@RequestBody Role Role) {
 
-	        return new ResponseEntity<>(trueStatusRoles, HttpStatus.OK);
-	    } catch (Exception e) {
-	        String errorMessage = "An error occurred while retrieving details.";
-	        ErrorResponse errorResponse = new ErrorResponse(errorMessage);
-	        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-	    }
+		try {
+
+			RoleService.SaveorUpdate(Role);
+
+			return ResponseEntity.status(HttpStatus.CREATED).body("Role details saved successfully.");
+
+		} catch (Exception e) {
+
+			String errorMessage = "An error occurred while saving Role details.";
+
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
+
+		}
+
 	}
+	
 
 
 	@PutMapping("/role/edit/{roleId}")

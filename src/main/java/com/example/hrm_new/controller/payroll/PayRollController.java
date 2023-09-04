@@ -1,8 +1,6 @@
 package com.example.hrm_new.controller.payroll;
 
-import java.sql.Date;
 import java.time.LocalDate;
-import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,23 +9,20 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.example.hrm_new.entity.payroll.PayRoll;
+import com.example.hrm_new.entity.payroll.SalaryRequest;
 import com.example.hrm_new.repository.payroll.PayRollRepository;
 import com.example.hrm_new.service.payroll.PayRollService;
 
@@ -42,7 +37,6 @@ public class PayRollController {
 	private PayRollRepository repo;
 
 	@GetMapping("/payroll")
-
 	public ResponseEntity<?> getDetails() {
 
 		try {
@@ -60,31 +54,6 @@ public class PayRollController {
 		}
 
 	}
-
-//	@PostMapping("/payroll/save")
-//	public ResponseEntity<?> saveBank(@RequestBody PayRoll payRoll) {
-//
-//		try {
-//			long totalSalary =payRoll.getTotalSalary();
-//			long totalDeductions=payRoll.getTotalDeductions();
-//			long allowance = payRoll .getAllowance();
-//			
-//			payRoll.setCurrentSalary(totalSalary-totalDeductions+allowance);
-//			
-//			payRoll.setStatus(true);
-//			payRollService.SaveorUpdate(payRoll);
-//
-//			return ResponseEntity.status(HttpStatus.CREATED).body("payroll details saved successfully.");
-//
-//		} catch (Exception e) {
-//
-//			String errorMessage = "An error occurred while saving payroll details.";
-//
-//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
-//
-//		}
-//
-//	}
 
 	@PostMapping("/payroll/save")
 	public ResponseEntity<?> savePayRoll(@RequestBody PayRoll payRoll) {
@@ -113,58 +82,74 @@ public class PayRollController {
 
 	}
 
-	@PutMapping("/payroll/editpayroll/{payRollId}")
+	@PutMapping("/payroll/or/{payRollId}")
+	public ResponseEntity<Boolean> toggleCustomerStatus(@PathVariable(name = "payRollId") long payRollId) {
+		try {
+			PayRoll payRoll = payRollService.findById(payRollId);
+			if (payRoll != null) {
 
+				boolean currentStatus = payRoll.isStatus();
+				payRoll.setStatus(!currentStatus);
+				payRollService.SaveorUpdate(payRoll);
+			} else {
+
+				return ResponseEntity.ok(false);
+			}
+
+			return ResponseEntity.ok(payRoll.isStatus()); // Return the new status (true or false)
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false); // Set response to false in case
+																						// of an error
+		}
+	}
+
+	@PutMapping("/payroll/editpayroll/{payRollId}")
 	public ResponseEntity<PayRoll> updatePayRoll(@PathVariable("payRollId") Long payRollId,
 			@RequestBody PayRoll payRollDetails) {
 
 		try {
-
 			PayRoll existingPayRoll = payRollService.findById(payRollId);
 
 			if (existingPayRoll == null) {
-
 				return ResponseEntity.notFound().build();
-
 			}
 
-			existingPayRoll.setEmployeeNameId(payRollDetails.getEmployeeNameId());
+			// Update the existing PayRoll properties with the values from payRollDetails
+			existingPayRoll.setEmployeeId(payRollDetails.getEmployeeId());
 			existingPayRoll.setDate(payRollDetails.getDate());
 			existingPayRoll.setTotalSalary(payRollDetails.getTotalSalary());
 			existingPayRoll.setPaymentTypeId(payRollDetails.getPaymentTypeId());
 			existingPayRoll.setTotalDeductions(payRollDetails.getTotalDeductions());
-			existingPayRoll.setCurrentSalary(payRollDetails.getCurrentSalary());
 			existingPayRoll.setAllowance(payRollDetails.getAllowance());
 			existingPayRoll.setNoOfDaysWorkingInaMonth(payRollDetails.getNoOfDaysWorkingInaMonth());
 			existingPayRoll.setStatus(payRollDetails.isStatus());
 
+			// Calculate the current salary using the provided logic
+			long totalSalary = existingPayRoll.getTotalSalary();
+			long totalDeductions = existingPayRoll.getTotalDeductions();
+			long allowance = existingPayRoll.getAllowance();
+			long currentSalary = totalSalary - totalDeductions + allowance;
+			existingPayRoll.setCurrentSalary(currentSalary);
+
+			// Save the updated PayRoll object back to the database
 			payRollService.save(existingPayRoll);
 
 			return ResponseEntity.ok(existingPayRoll);
-
 		} catch (Exception e) {
-
 			e.printStackTrace();
-
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-
 		}
-
-	}
-
-	@DeleteMapping("/payroll/payrolldelete/{payRollId}")
-
-	public ResponseEntity<String> deletePayRoll(@PathVariable("payRollId") Long payRollId) {
-
-		payRollService.deletePayRollIdById(payRollId);
-
-		return ResponseEntity.ok("payroll deleted successfully");
-
 	}
 
 	@GetMapping("/payrolldetails/view")
 	public List<Map<String, Object>> payRollDetails() {
 		return payRollService.allPayRollDetails();
+
+	}
+	
+	@GetMapping("/payrolldetails/show")
+	public List<Map<String, Object>> payRollDetails2() {
+		return repo.allPayRollDetails1();
 
 	}
 
@@ -204,12 +189,12 @@ public class PayRollController {
 
 	}
 
-	@GetMapping("/payrolldetails/{employee_name_id}")
-	private List<Map<String, Object>> employeeIdPayroll(@PathVariable Long employee_name_id) {
+	@GetMapping("/payrolldetails/{employee_id}")
+	private List<Map<String, Object>> employeeIdPayroll(@PathVariable Long employee_id) {
 		List<Map<String, Object>> payRollist1 = new ArrayList<>();
-		List<Map<String, Object>> list1 = payRollService.findAllByEmployeeId(employee_name_id);
+		List<Map<String, Object>> list1 = payRollService.findAllByEmployeeId(employee_id);
 		Map<String, List<Map<String, Object>>> payRollGroupMap1 = StreamSupport.stream(list1.spliterator(), false)
-				.collect(Collectors.groupingBy(action -> String.valueOf(action.get("employee_name_id"))));
+				.collect(Collectors.groupingBy(action -> String.valueOf(action.get("employee_id"))));
 
 		for (java.util.Map.Entry<String, List<Map<String, Object>>> totalList : payRollGroupMap1.entrySet()) {
 			Map<String, Object> payRollMap = new HashMap<>();
@@ -221,6 +206,22 @@ public class PayRollController {
 		return payRollist1;
 
 	}
+	
+	 @PostMapping("/payrolldetails/date")
+	    public List<Map<String, Object>> getAllVoucherBetweenDates(
+				@RequestBody Map<String, Object> requestBody) {
+			LocalDate startDate = LocalDate.parse(requestBody.get("startDate").toString(), DateTimeFormatter.ISO_DATE);
+			LocalDate endDate = LocalDate.parse(requestBody.get("endDate").toString(), DateTimeFormatter.ISO_DATE);
+	        return repo.getAllpromotionsBetweenDates(startDate, endDate);
+	    }
+	 
+	 @PostMapping("/payrolldetails/date/one")
+	    public List<Map<String, Object>> getAllVoucherBetweenDates5(
+				@RequestBody Map<String, Object> requestBody) {
+			LocalDate startDate = LocalDate.parse(requestBody.get("startDate").toString(), DateTimeFormatter.ISO_DATE);
+			
+	        return repo.getAllpromotionsBetweenDates4(startDate );
+	    }
 
 	@GetMapping("/currentsalarybydate")
 	public List<Map<String, Object>> dailyExpenseByDate() {
@@ -232,10 +233,38 @@ public class PayRollController {
 		return repo.totalSalaryByMonth();
 	}
 
+//	@PostMapping("/totalsalarybymonth1")
+//	public List<Map<String, Object>> totalSalaryByMonth1(@RequestBody("year") int year, @RequestBody("monthname") String monthname) {
+//		return repo.findByYearAndMonth(year, monthname);
+//	}
+	
+//	@PostMapping("/totalsalarybymonth1")
+//    public List<Map<String, Object>> totalSalaryByMonth1(@RequestBody Map<String, Object> request) {
+//        int year = (int) request.get("year");
+//        String monthname = (String) request.get("monthname");
+//        return repo.findByYearAndMonth(year, monthname);
+//    }
+	
 	@PostMapping("/totalsalarybymonth1")
-	public List<Map<String, Object>> totalSalaryByMonth1(@Param("year") int year, @Param("month") int month) {
-		return repo.findByYearAndMonth(year, month);
+	public List<Map<String, Object>> totalSalaryByMonth1(@RequestBody SalaryRequest request) {
+	    Integer year = request.getYear();
+	    String monthname = request.getMonthname();
+	    return repo.findByYearAndMonth(year, monthname);
 	}
+
+
+	@PostMapping("/totalsalary/month/year")
+	public List<Map<String, Object>> totalSalaryByMonth4(@RequestBody SalaryRequest request) {
+	    Integer year = request.getYear();
+	    String monthname = request.getMonthname();
+	    return repo.allDetailsOfPayRollByMonthAndYear(year, monthname);
+	}
+
+
+//	@PostMapping("/totalsalary/month/year")
+//	public List<Map<String, Object>> salaryByMonthAndYear(int month, int year) {
+//		return repo.allDetailsOfPayRollByMonthAndYear(month, year);
+//	}
 
 	@PostMapping("/highestsalarybymonth")
 	public List<Map<String, Object>> findByMonthb(@Param("month") int month) {

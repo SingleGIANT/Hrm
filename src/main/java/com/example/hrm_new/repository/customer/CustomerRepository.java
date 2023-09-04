@@ -16,13 +16,14 @@ public interface CustomerRepository extends JpaRepository<Customer, Long>{
 	@Query(value=
 			  "  select c.*,f.form_type_name "
 			  + "			   from customer as c"
-			  + "			 join formtype as f on f.form_type_id=c.form_type_id",nativeQuery = true)
+			  + "			 join formtype as f on f.form_type_id=c.form_type_id"
+			  + "  order by c.customer_id desc",nativeQuery = true)
 	List <Map<String,Object>>  allDetails();
 	
-	@Query(value = "select c.*, f.form_type_name "
-            + "from customer as c "
-            + "join formtype as f on f.form_type_id = c.form_type_id "
-            + "where c.customer_id = :customer_id", nativeQuery = true)
+	@Query(value = " select c.*, f.form_type_name "
+            + " from customer as c "
+            + "  join formtype as f on f.form_type_id = c.form_type_id "
+            + " where c.customer_id = :customer_id", nativeQuery = true)
 List<Map<String, Object>> Allemployeeleave(@Param("customer_id")long customer_id);
 
 

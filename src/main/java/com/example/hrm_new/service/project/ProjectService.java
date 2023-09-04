@@ -1,10 +1,14 @@
 package com.example.hrm_new.service.project;
 
-import java.util.Optional;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.hrm_new.entity.employee.Employee;
+import com.example.hrm_new.entity.payroll.PaymentType;
 import com.example.hrm_new.entity.project.Project;
 import com.example.hrm_new.repository.project.ProjectRepository;
 
@@ -15,13 +19,12 @@ public class ProjectService {
 	@Autowired
 	private ProjectRepository projectRepository;
 	
-	public Iterable<Project> listAll(){
-		return  this.projectRepository.findAll();
-		
-		
+	public List<Project> listAll(){
+		return  projectRepository.findAll();
 	}
-	public void SaveorUpdate(Project project) {
-		projectRepository.save(project);
+	
+	public Project SaveorUpdate(Project project) {
+		return projectRepository.save(project);
 	}
 	
 	
@@ -44,5 +47,8 @@ public class ProjectService {
 		return	projectRepository.findById(projectId);
 		 
 	}
-
+	
+	public Project getprojectById(Long ProjectId) {
+		return projectRepository.findById(ProjectId).orElse(null);
+	}
 }

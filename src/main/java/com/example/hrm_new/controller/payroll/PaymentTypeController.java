@@ -109,7 +109,6 @@ public class PaymentTypeController {
 	}
 	
 	@DeleteMapping("/PaymentType/PaymentTypedelete/{paymentTypeId}")
-
 	public ResponseEntity<String> deletePayRoll(@PathVariable("paymentTypeId") Long paymentTypeId) {
 
 		paymentTypeService.deletePaymentTypeIdById(paymentTypeId);

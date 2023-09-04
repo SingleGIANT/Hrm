@@ -49,40 +49,27 @@ public class ProjectReportController {
 		}
 	}
 
-//	@PostMapping("/projectreport/save")
-//	public ResponseEntity<String> saveProjectReport(@RequestBody ProjectReport ProjectReport) {
-//		try {
-//			ProjectReport.setStatus(true);
-//			service.saveOrUpdate(ProjectReport);
-//			return ResponseEntity.ok("ProjectReport saved with id: " + ProjectReport.getProjectReportId());
-//		} catch (Exception e) {
-//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//					.body("Error saving ProjectReport: " + e.getMessage());
-//		}
-//	}
-	
-	  @PostMapping("/projectreport/save")
-	    public ResponseEntity<String> saveProjectReport(@RequestBody ProjectReport projectReport) {
-	        try {
-	            Date dateGive = projectReport.getDateGive();
-	            Date extendedDate = projectReport.getExtendedDate();
-	            int duration = calculateDuration(dateGive, extendedDate);
-	            projectReport.setDuration(duration);
-	            projectReport.setStatus(true);
-	            service.saveOrUpdate(projectReport);
-	            return ResponseEntity.ok("ProjectReport saved with id: " + projectReport.getProjectReportId());
-	        } catch (Exception e) {
-	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                    .body("Error saving ProjectReport: " + e.getMessage());
-	        }
-	    }
+	@PostMapping("/projectreport/save")
+	public ResponseEntity<String> saveProjectReport(@RequestBody ProjectReport projectReport) {
+		try {
+			Date dateGive = projectReport.getDateGive();
+			Date extendedDate = projectReport.getExtendedDate();
+			int duration = calculateDuration(dateGive, extendedDate);
+			projectReport.setDuration(duration);
+			projectReport.setStatus(true);
+			service.saveOrUpdate(projectReport);
+			return ResponseEntity.ok("ProjectReport saved with id: " + projectReport.getProjectReportId());
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error saving ProjectReport: " + e.getMessage());
+		}
+	}
 
-	    // Helper method to calculate the duration between two dates
-	    private int calculateDuration(Date date1, Date date2) {
-	        long diffInMillis = Math.abs(date2.getTime() - date1.getTime());
-	        int daysDifference = (int) (diffInMillis / (24 * 60 * 60 * 1000));
-	        return daysDifference;
-	    }
+	private int calculateDuration(Date date1, Date date2) {
+		long diffInMillis = Math.abs(date2.getTime() - date1.getTime());
+		int daysDifference = (int) (diffInMillis / (24 * 60 * 60 * 1000));
+		return daysDifference;
+	}
 
 	@PutMapping("/projectreport/or/{id}")
 	public ResponseEntity<?> getProjectReportById(@PathVariable(name = "id") long id) {
@@ -91,31 +78,39 @@ public class ProjectReportController {
 			if (ProjectReport != null) {
 				boolean currentStatus = ProjectReport.isStatus();
 				ProjectReport.setStatus(!currentStatus);
-                service.saveOrUpdate(ProjectReport); // Save the updated complaints
-            } else {
-                return ResponseEntity.ok(false); // Complaints with the given ID does not exist, return false
-            }
+				service.saveOrUpdate(ProjectReport); // Save the updated complaints
+			} else {
+				return ResponseEntity.ok(false); // Complaints with the given ID does not exist, return false
+			}
 
-            return ResponseEntity.ok(ProjectReport.isStatus()); // Return the new status (true or false)
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(false); // Set response to false in case of an error
-        }
-    }
+			return ResponseEntity.ok(ProjectReport.isStatus()); // Return the new status (true or false)
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false); // Set response to false in case
+																						// of an error
+		}
+	}
+
 	@PutMapping("/projectreport/edit/{id}")
 	public ResponseEntity<ProjectReport> updateProjectReport(@PathVariable("id") long id,
-			@RequestBody ProjectReport ProjectReport) {
+			@RequestBody ProjectReport projectReport) {
 		try {
 			ProjectReport existingProjectReport = service.getById(id);
 			if (existingProjectReport == null) {
 				return ResponseEntity.notFound().build();
 			}
-			existingProjectReport.setExtendedDate(ProjectReport.getExtendedDate());
-			existingProjectReport.setDuration(ProjectReport.getDuration());
-			existingProjectReport.setEmployeeId(ProjectReport.getEmployeeId());
-			existingProjectReport.setProjectId(ProjectReport.getProjectId());
-			existingProjectReport.setDateGive(ProjectReport.getDateGive());
-			existingProjectReport.setStatus(ProjectReport.isStatus());
+
+// Calculate duration and set it in the projectReport object
+			Date dateGive = projectReport.getDateGive();
+			Date extendedDate = projectReport.getExtendedDate();
+			int duration = calculateDuration(dateGive, extendedDate);
+			projectReport.setDuration(duration);
+
+// Update other fields
+			existingProjectReport.setExtendedDate(projectReport.getExtendedDate());
+			existingProjectReport.setDuration(projectReport.getDuration());
+			existingProjectReport.setEmployeeId(projectReport.getEmployeeId());
+			existingProjectReport.setProjectId(projectReport.getProjectId());
+			existingProjectReport.setDateGive(projectReport.getDateGive());
 
 			service.saveOrUpdate(existingProjectReport);
 			return ResponseEntity.ok(existingProjectReport);
@@ -167,14 +162,12 @@ public class ProjectReportController {
 	}
 
 	//////////////////////// 32 ///////////////////////////////////
-	
-	
-	  @GetMapping("/projectreport/count")
-	    public List<Map<String, Object>> getPurchaseAndSales() {
-	        return repo.getPurchaseAndSales();
-	    }
-	
+
+	@GetMapping("/projectreport/count")
+	public List<Map<String, Object>> getPurchaseAndSales() {
+		return repo.getPurchaseAndSales();
+	}
+
 	///////////////// 33 ///////////////////
-	
 
 }

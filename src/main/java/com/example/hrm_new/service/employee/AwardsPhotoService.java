@@ -37,4 +37,8 @@ public class AwardsPhotoService {
 	        return awardsPhotoRepository.findById(awardsPhotoId);
 	    }
 
+	public Optional<AwardsPhoto> getVideoFileById(Long id) {
+		  return awardsPhotoRepository.findById(id);
+	}
+
 }

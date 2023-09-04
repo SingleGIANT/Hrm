@@ -29,4 +29,20 @@ public class QualificationService {
 	        return repo.findById(employeeId);
 	    }
 
+		public Optional<Qualification> getAwardsPhotoById(Long id) {
+			return repo.findById(id);
+		}
+
+		public Qualification update(Qualification qualification) {
+			return repo.save(qualification);
+			
+		}
+		
+		public List<Map<String, Object>> getAllQualificationsByImage(){
+			return repo.getAllQualificationsByImage();
+		}
+
+	    public Optional<Qualification> getQualificationById1(long id) {
+	        return repo.findById(id);
+	    }
 }

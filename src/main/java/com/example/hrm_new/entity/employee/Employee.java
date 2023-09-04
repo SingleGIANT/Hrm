@@ -12,7 +12,6 @@ import javax.persistence.Table;
 @Table(name="employee")
 public class Employee {
 	
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long employeeId;
@@ -25,12 +24,18 @@ public class Employee {
 	private String marital;
 	private String city;
 	private String address;
+	private String bankName;
+	private String branchName;
+	private String  holderName;
+	private String ifseCode;
 	private Date dob;
+	private long accountNumber;
 	private Date dateOfJoining;
 	private int experience;
 	private String companyName;
 	private String description;
 	private long designationId;
+	  private Long departmentId;
 	private long roleId;
 	private long phoneNumber;
 	private boolean status;
@@ -147,13 +152,46 @@ public class Employee {
 	}
 	public void setStatus(boolean status) {
 		this.status = status;
+	}	
+	public String getBankName() {
+		return bankName;
 	}
+	public void setBankName(String bankName) {
+		this.bankName = bankName;
+	}
+	public String getBranchName() {
+		return branchName;
+	}
+	public void setBranchName(String branchName) {
+		this.branchName = branchName;
+	}
+	public String getHolderName() {
+		return holderName;
+	}
+	public void setHolderName(String holderName) {
+		this.holderName = holderName;
+	}
+	public String getIfseCode() {
+		return ifseCode;
+	}
+	public void setIfseCode(String ifseCode) {
+		this.ifseCode = ifseCode;
+	}
+	public long getAccountNumber() {
+		return accountNumber;
+	}
+	public void setAccountNumber(long accountNumber) {
+		this.accountNumber = accountNumber;
+	}	
 	public Employee() {
 		super();
 	}
-	
-	
-	
+	public Long getDepartmentId() {
+		return departmentId;
+	}
+	public void setDepartmentId(Long departmentId) {
+		this.departmentId = departmentId;
+	}
 	
 	
 

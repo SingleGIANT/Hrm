@@ -1,32 +1,26 @@
 package com.example.hrm_new.controller.employee;
 
 import java.io.IOException;
-import java.math.BigDecimal;
+
 import java.math.BigInteger;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.sql.Blob;
 import java.sql.Date;
 import java.util.*;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
 import javax.sql.rowset.serial.SerialBlob;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.data.repository.query.Param;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.example.hrm_new.entity.employee.Awards;
 import com.example.hrm_new.entity.employee.AwardsPhoto;
 import com.example.hrm_new.repository.employee.AwardsRepository;
@@ -48,7 +42,7 @@ public class AwardsController {
 	@PostMapping(value = "/awards/save", headers = ("content-type=multipart/form-data"), consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<String> addImagePost(@RequestPart("awardsPhoto") MultipartFile[] files,
 			@RequestParam("description") String description, @RequestParam("gift") String gift,
-			@RequestParam("date") Date date, @RequestParam("cash") int cash,
+			@RequestParam("date") Date date, @RequestParam("cash") int cash,@RequestParam("awardsType") String awardsType,
 			@RequestParam("employeeId") long employeeId) {
 		try {
 			if (files == null || files.length == 0) {
@@ -72,6 +66,7 @@ public class AwardsController {
 			Awards awards = new Awards();
 			awards.setDescription(description);
 			awards.setGift(gift);
+			awards.setAwardsType(awardsType);
 			awards.setDate(date);
 			awards.setCash(cash);
 			awards.setStatus(true);
@@ -90,7 +85,7 @@ public class AwardsController {
 
 	@PostMapping(value = "/add1", headers = ("content-type=multipart/form-data"), consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<String> addImagePost(@RequestParam("awardsPhoto") MultipartFile file,
-			@RequestParam("description") String description, @RequestParam("gift") String gift,
+			@RequestParam("description") String description, @RequestParam("gift") String gift,@RequestParam("awardsType") String awardsType,
 			@RequestParam("date") Date date, @RequestParam("cash") int cash,
 			@RequestParam("employeeId") long employeeId) {
 		try {
@@ -107,6 +102,7 @@ public class AwardsController {
 			Awards awards = new Awards();
 			awards.setDescription(description);
 			awards.setGift(gift);
+			awards.setAwardsType(awardsType);
 			awards.setDate(date);
 			awards.setCash(cash);
 			awards.setStatus(true);
@@ -126,22 +122,22 @@ public class AwardsController {
 		}
 	}
 
-	@GetMapping("/awards")
-	public ResponseEntity<List<Awards>> getAllAwards() {
-		try {
-			List<Awards> awardsList = service.getAllAwards();
-			for (Awards awards : awardsList) {
-				List<AwardsPhoto> awardsPhotos = awards.getAwardsPhotos();
-				for (AwardsPhoto awardsPhoto : awardsPhotos) {
-					String imageUrl = "/image/" + generateRandomNumber() + "/" + awardsPhoto.getAwardsPhotoId();
-					awardsPhoto.setUrl(imageUrl);
-				}
-			}
-			return ResponseEntity.ok(awardsList);
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-		}
-	}
+//	@GetMapping("/awards")
+//	public ResponseEntity<List<Awards>>  getAllAwards() {
+//		try {
+//			List<Awards> awardsList = service.getAllAwards();
+//			for (Awards awards : awardsList) {
+//				List<AwardsPhoto> awardsPhotos = awards.getAwardsPhotos();
+//				for (AwardsPhoto awardsPhoto : awardsPhotos) {
+//					String imageUrl = "/image/" + generateRandomNumber() + "/" + awardsPhoto.getAwardsPhotoId();
+//					awardsPhoto.setUrl(imageUrl);
+//				}
+//			}
+//			return ResponseEntity.ok(awardsList);
+//		} catch (Exception e) {
+//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//		}
+//	}
 
 	@GetMapping("/awards/{awardsId}")
 	public ResponseEntity<Awards> getAwardsById56(@PathVariable("awardsId") long awardsId) {
@@ -195,33 +191,29 @@ public class AwardsController {
 
 	private int generateRandomNumber() {
 		Random random = new Random();
-		return random.nextInt(1000);
+		return random.nextInt(1000000);
 	}
-
-//	@GetMapping("/image/{randomNumber}/{id}")
-//	public ResponseEntity<Resource> serveImage(@PathVariable("randomNumber") int randomNumber,
-//			@PathVariable("id") Long id) {
-//		Optional<AwardsPhoto> awardsPhotoOptional = awardsPhotoService.getAwardsPhotoById(id);
-//		if (awardsPhotoOptional.isPresent()) {
-//			AwardsPhoto awardsPhoto = awardsPhotoOptional.get();
-//			byte[] imageBytes;
-//			try {
-//				imageBytes = awardsPhoto.getAwardsPhoto().getBytes(1, (int) awardsPhoto.getAwardsPhoto().length());
-//			} catch (SQLException e) {
-//				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-//			}
-//			ByteArrayResource resource = new ByteArrayResource(imageBytes);
-//			HttpHeaders headers = new HttpHeaders();
-//			headers.setContentType(MediaType.IMAGE_JPEG);
-//			return ResponseEntity.ok().headers(headers).body(resource);
-//		} else {
-//			return ResponseEntity.notFound().build();
-//		}
-//	}
+	@GetMapping("/awards")
+	public ResponseEntity<List<Awards>> getAllAwards() {
+	    try {
+	        List<Awards> awardsList = service.getAllAwards();
+	        for (Awards awards : awardsList) {
+	            List<AwardsPhoto> awardsPhotos = awards.getAwardsPhotos();
+	            for (AwardsPhoto awardsPhoto : awardsPhotos) {
+	                String imageUrl = "/image/" + generateRandomNumber() + "/" + awardsPhoto.getAwardsPhotoId();
+	                awardsPhoto.setUrl(imageUrl);
+	            }
+	        }
+	        return ResponseEntity.ok(awardsList);
+	    } catch (Exception e) {
+	        e.printStackTrace(); // Log the error for debugging
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+	    }
+	}
 
 	@GetMapping("/image/{randomNumber}/{id}")
 	public ResponseEntity<Resource> serveFile(@PathVariable("randomNumber") int randomNumber,
-	                                           @PathVariable("id") Long id) {
+	                                          @PathVariable("id") Long id) {
 	    Optional<AwardsPhoto> awardsPhotoOptional = awardsPhotoService.getAwardsPhotoById(id);
 	    if (awardsPhotoOptional.isPresent()) {
 	        AwardsPhoto awardsPhoto = awardsPhotoOptional.get();
@@ -230,6 +222,7 @@ public class AwardsController {
 	        try {
 	            fileBytes = awardsPhoto.getAwardsPhoto().getBytes(1, (int) awardsPhoto.getAwardsPhoto().length());
 	        } catch (SQLException e) {
+	            e.printStackTrace(); // Log the error for debugging
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 	        }
 
@@ -241,12 +234,13 @@ public class AwardsController {
 	        ByteArrayResource resource = new ByteArrayResource(fileBytes);
 	        HttpHeaders headers = new HttpHeaders();
 	        headers.setContentType(mediaType);
-	        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename + "." + extension);
+	        headers.set(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=" + filename + "." + extension);
 	        return ResponseEntity.ok().headers(headers).body(resource);
 	    } else {
 	        return ResponseEntity.notFound().build();
 	    }
 	}
+
 	private String determineFileExtension(byte[] fileBytes) {
 	    try {
 	        // Inspect the first few bytes of the file to determine its type
@@ -259,7 +253,7 @@ public class AwardsController {
 	            return "pdf";
 	        }
 	    } catch (Exception e) {
-	        e.printStackTrace();
+	        e.printStackTrace(); // Log the error for debugging
 	    }
 	    return "unknown";
 	}
@@ -285,14 +279,18 @@ public class AwardsController {
 	    return sb.toString();
 	}
 
+
+
+
 	@PutMapping("/edit/{awardsId}")
 	public ResponseEntity<String> editImage(@PathVariable("awardsId") long awardsId,
-			@RequestParam(value = "images", required = false) MultipartFile[] files,
+			@RequestParam(value = "awardsPhoto", required = false) MultipartFile[] files,
 			@RequestParam(value = "description", required = false) String description,
 			@RequestParam(value = "gift", required = false) String gift,
 			@RequestParam(value = "date", required = false) Date date,
 			@RequestParam(value = "cash", required = false) int cash,
-			@RequestParam(value = "employeeId", required = false) long employeeId) {
+			@RequestParam(value = "employeeId", required = false) long employeeId,
+			@RequestParam(value = "awardsType", required = false) String awardsType) {
 		try {
 			Optional<Awards> awardsOptional = service.getAwardsById(awardsId);
 			if (awardsOptional.isPresent()) {
@@ -303,6 +301,9 @@ public class AwardsController {
 				}
 				if (gift != null) {
 					awards.setGift(gift);
+				}
+				if (awardsType != null) {
+					awards.setAwardsType(awardsType);
 				}
 				if (date != null) {
 					awards.setDate(date);
@@ -341,40 +342,60 @@ public class AwardsController {
 		}
 	}
 
-	@GetMapping("/awards/view")
-	public List<Map<String, Object>> allcompanyDetails() {
-		List<Map<String, Object>> awardList = new ArrayList<>();
-		List<Map<String, Object>> awardDetails = repo.AllEmployee();
-		Map<String, List<Map<String, Object>>> awardGroupMap = StreamSupport.stream(awardDetails.spliterator(), false)
-				.collect(Collectors.groupingBy(action -> action.get("awards_id").toString()));
+	
+	@GetMapping("/photo")
+	public List<Map<String, Object>> allCompanyDetails() {
+	    List<Map<String, Object>> awardList = new ArrayList<>();
+	    
+	    List<Map<String, Object>> awardDetails = repo.AllEmployee();
+	    Map<String, Map<String, Object>> awardsMap = new HashMap<>();
 
-		for (Entry<String, List<Map<String, Object>>> entry : awardGroupMap.entrySet()) {
-			Map<String, Object> awardsMap = new HashMap<>();
-			List<Map<String, Object>> awardsList = entry.getValue();
+	    for (Map<String, Object> award : awardDetails) {
+	        String awardsId = award.get("awards_id").toString();
+	        if (!awardsMap.containsKey(awardsId)) {
+	            Map<String, Object> awardsData = new HashMap<>();
+	            awardsData.put("awardsId", award.get("awards_id"));
+	            awardsData.put("description", getValueOrNull(award.get("description")));
+	            awardsData.put("gift", getValueOrNull(award.get("gift")));
+	            awardsData.put("date", getValueOrNull(award.get("date")));
+	            awardsData.put("cash", getValueOrNull(award.get("cash")));
+	            awardsData.put("status", getValueOrNull(award.get("status")));
+	            awardsData.put("employeeId", getValueOrNull(award.get("employee_id")));
+	            awardsData.put("firstName", getValueOrNull(award.get("first_name")));
+	            awardsData.put("lastName", getValueOrNull(award.get("last_name")));
+	            awardsData.put("awardsType", getValueOrNull(award.get("awards_type")));
 
-			awardsMap.put("awardsId", awardsList.get(0).get("awards_id"));
-			awardsMap.put("description", awardsList.get(0).get("description"));
-			awardsMap.put("gift", awardsList.get(0).get("gift"));
-			awardsMap.put("date", awardsList.get(0).get("date"));
-			awardsMap.put("cash", awardsList.get(0).get("cash"));
-			awardsMap.put("status", awardsList.get(0).get("status"));
-			awardsMap.put("employeeId", awardsList.get(0).get("employee_id"));
-			awardsMap.put("firstName", awardsList.get(0).get("first_name"));
-			awardsMap.put("lastName", awardsList.get(0).get("last_name"));
+	            List<Map<String, Object>> awardsPhotosList = new ArrayList<>();
+	            awardsData.put("awardsPhotos", awardsPhotosList);
 
-			List<Map<String, Object>> awardsPhotosList = new ArrayList<>();
-			for (Map<String, Object> award : awardsList) {
-				Map<String, Object> awardsPhotoMap = new HashMap<>();
-				awardsPhotoMap.put("awardsPhotoId", award.get("awards_photo_id"));
-				awardsPhotoMap.put("url", "/image/" + generateRandomNumber() + "/" + award.get("awards_id"));
-				awardsPhotosList.add(awardsPhotoMap);
-			}
-			awardsMap.put("awardsPhotos", awardsPhotosList);
+	            awardsMap.put(awardsId, awardsData);
+	            awardList.add(awardsData);
+	        }
 
-			awardList.add(awardsMap);
-		}
-		return awardList;
+	        if (award.get("awards_photo_id") != null) {
+	            Map<String, Object> awardsPhotoMap = new HashMap<>();
+	            awardsPhotoMap.put("awardsPhotoId", award.get("awards_photo_id"));
+	            awardsPhotoMap.put("url", "/image/" + generateRandomNumber() + "/" + award.get("awards_photo_id"));
+
+	            // Corrected line
+	            List<Map<String, Object>> photosList = (List<Map<String, Object>>) awardsMap.get(awardsId).get("awardsPhotos");
+	            if (photosList == null) {
+	                photosList = new ArrayList<>();
+	                awardsMap.get(awardsId).put("awardsPhotos", photosList);
+	            }
+	            photosList.add(awardsPhotoMap);
+	        }
+	    }
+
+	    return awardList;
 	}
+
+	private Object getValueOrNull(Object value) {
+	    return value != null && !value.toString().trim().isEmpty() ? value : null;
+	}
+
+
+
 ///////13 //////
 
 	@GetMapping("/awards/count/{employee_id}")
@@ -391,60 +412,59 @@ public class AwardsController {
 		return result;
 	}
 
-//	 @PostMapping("/awards/date")
-//	    public List<Awards> getEmployeeAwardsByDate(@Param("awardDate") String awardDate){	                                               
-//	        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-//	        java.util.Date parsedDate;
-//	        try {
-//	            parsedDate = dateFormat.parse(awardDate);
-//	        } catch (ParseException e) {
-//	            e.printStackTrace();
-//	            return new ArrayList<>();
-//	        }
-//	        List<Awards> awardsList = repo.findAwardsByEmployeeIdAndDate(parsedDate);
-//	        return awardsList;
-//	    }
+
 
 	///// 14 ///////
 
 	@PostMapping("/awards/date")
-	public List<Map<String, Object>> getEmployeeAwardsByDate1(@RequestParam("awardDate") String awardDate) {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		java.util.Date parsedDate;
-		try {
-			parsedDate = dateFormat.parse(awardDate);
-		} catch (ParseException e) {
-			e.printStackTrace();
-			return new ArrayList<>();
-		}
+	public List<Map<String, Object>> getEmployeeAwardsByDate1(@RequestBody Map<String, Object> requestBody) {
+	    LocalDate startDate = LocalDate.parse(requestBody.get("startDate").toString(), DateTimeFormatter.ISO_DATE);
+	    LocalDate endDate = LocalDate.parse(requestBody.get("endDate").toString(), DateTimeFormatter.ISO_DATE);
+	    List<Map<String, Object>> awardsList = new ArrayList<>(); // Corrected line
 
-		List<Awards> awardsList = repo.findAwardsByEmployeeIdAndDate(parsedDate);
+	    List<Map<String, Object>> awards = repo.findAwardsByEmployeeIdAndDate(startDate, endDate);
 
-		List<Map<String, Object>> result = new ArrayList<>();
-		for (Awards award : awardsList) {
-			Map<String, Object> awardsMap = new HashMap<>();
-			awardsMap.put("awardsId", award.getAwardsId());
-			awardsMap.put("description", award.getDescription());
-			awardsMap.put("gift", award.getGift());
-			awardsMap.put("date", award.getDate());
-			awardsMap.put("cash", award.getCash());
-			awardsMap.put("employeeId", award.getEmployeeId());
-			awardsMap.put("status", award.isStatus());
+	    Map<String, Map<String, Object>> awardsMap = new HashMap<>();
 
-			List<Map<String, Object>> awardsPhotosList = new ArrayList<>();
-			for (AwardsPhoto awardsPhoto : award.getAwardsPhotos()) {
-				Map<String, Object> awardsPhotoMap = new HashMap<>();
-				awardsPhotoMap.put("awardsPhotoId", awardsPhoto.getAwardsPhotoId());
-				awardsPhotoMap.put("url", "/image/" + generateRandomNumber() + "/" + awardsPhoto.getAwardsPhotoId());
-				awardsPhotosList.add(awardsPhotoMap);
-			}
+	    for (Map<String, Object> award : awards) { // Corrected line
+	        String awardsId = award.get("awards_id").toString();
+	        if (!awardsMap.containsKey(awardsId)) {
+	            Map<String, Object> awardsData = new HashMap<>();
+	            awardsData.put("awardsId", award.get("awards_id"));
+	            awardsData.put("description", getValueOrNull(award.get("description")));
+	            awardsData.put("gift", getValueOrNull(award.get("gift")));
+	            awardsData.put("date", getValueOrNull(award.get("date")));
+	            awardsData.put("cash", getValueOrNull(award.get("cash")));
+	            awardsData.put("status", getValueOrNull(award.get("status")));
+	            awardsData.put("employeeId", getValueOrNull(award.get("employee_id")));
+	            awardsData.put("firstName", getValueOrNull(award.get("first_name")));
+	            awardsData.put("lastName", getValueOrNull(award.get("last_name")));
+	            awardsData.put("awardsType", getValueOrNull(award.get("awards_type")));
 
-			awardsMap.put("awardsPhotos", awardsPhotosList);
-			result.add(awardsMap);
-		}
+	            List<Map<String, Object>> awardsPhotosList = new ArrayList<>();
+	            awardsData.put("awardsPhotos", awardsPhotosList);
 
-		return result;
+	            awardsMap.put(awardsId, awardsData);
+	            awardsList.add(awardsData); // Corrected line
+	        }
+
+	        if (award.get("awards_photo_id") != null) {
+	            Map<String, Object> awardsPhotoMap = new HashMap<>();
+	            awardsPhotoMap.put("awardsPhotoId", award.get("awards_photo_id"));
+	            awardsPhotoMap.put("url", "/image/" + generateRandomNumber() + "/" + award.get("awards_photo_id"));
+
+	            List<Map<String, Object>> photosList = (List<Map<String, Object>>) awardsMap.get(awardsId).get("awardsPhotos");
+	            if (photosList == null) {
+	                photosList = new ArrayList<>();
+	                awardsMap.get(awardsId).put("awardsPhotos", photosList);
+	            }
+	            photosList.add(awardsPhotoMap);
+	        }
+	    }
+
+	    return awardsList; // Corrected line
 	}
+
                ////////   15  //////////////
 	
 	@GetMapping("/awards/count")
@@ -455,9 +475,9 @@ public class AwardsController {
 	    for (Object[] result : results) {
 	        Long employeeId = ((BigInteger) result[0]).longValue();
 	        String awardsCountStr = (String) result[1];
+	        int awardsCount = Integer.parseInt(awardsCountStr); // Convert to integer
 
 	        List<Awards> employeeAwards = repo.findByEmployeeId(employeeId);
-	        List<Map<String, Object>> awardsPhotosList = new ArrayList<>();
 
 	        for (Awards awards : employeeAwards) {
 	            Map<String, Object> awardsMap = new HashMap<>();
@@ -467,18 +487,19 @@ public class AwardsController {
 	            awardsMap.put("date", awards.getDate());
 	            awardsMap.put("cash", awards.getCash());
 	            awardsMap.put("employeeId", awards.getEmployeeId());
+	            
 	            awardsMap.put("status", awards.isStatus());
 
-	            List<Map<String, Object>> awardsPhotos = new ArrayList<>();
+	            List<Map<String, Object>> awardsPhotosList = new ArrayList<>();
 	            for (AwardsPhoto awardsPhoto : awards.getAwardsPhotos()) {
 	                Map<String, Object> awardsPhotoMap = new HashMap<>();
 	                awardsPhotoMap.put("awardsPhotoId", awardsPhoto.getAwardsPhotoId());
 	                awardsPhotoMap.put("url", "/image/" + generateRandomNumber() + "/" + awardsPhoto.getAwardsPhotoId());
-	                awardsPhotos.add(awardsPhotoMap);
+	                awardsPhotosList.add(awardsPhotoMap);
 	            }
 
-	            awardsMap.put("awardsPhotos", awardsPhotos);
-	            awardsMap.put("awardsCount", awardsCountStr); 
+	            awardsMap.put("awardsPhotos", awardsPhotosList);
+	            awardsMap.put("awardsCount", awardsCount); 
 
 	            employeeAwardsList.add(awardsMap);
 	        }
@@ -486,6 +507,58 @@ public class AwardsController {
 
 	    return employeeAwardsList;
 	}
+
+	
+	
+	
+	
+	///////////////////video formate ////////////////////////
+//	@GetMapping("/image/{randomNumber}/{id}")
+//	public ResponseEntity<Resource> serveImage(@PathVariable("randomNumber") int randomNumber,
+//			@PathVariable("id") Long id) {
+//		Optional<AwardsPhoto> awardsPhotoOptional = awardsPhotoService.getAwardsPhotoById(id);
+//		if (awardsPhotoOptional.isPresent()) {
+//			AwardsPhoto awardsPhoto = awardsPhotoOptional.get();
+//			byte[] imageBytes;
+//			try {
+//				imageBytes = awardsPhoto.getAwardsPhoto().getBytes(1, (int) awardsPhoto.getAwardsPhoto().length());
+//			} catch (SQLException e) {
+//				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//			}
+//			ByteArrayResource resource = new ByteArrayResource(imageBytes);
+//			HttpHeaders headers = new HttpHeaders();
+//			headers.setContentType(MediaType.IMAGE_JPEG);
+//			return ResponseEntity.ok().headers(headers).body(resource);
+//		} else {
+//			return ResponseEntity.notFound().build();
+//		}
+//	}
+
+	
+//	@GetMapping("/video/{randomNumber}/{id}")
+//    public ResponseEntity<Resource> serveVideo(@PathVariable("randomNumber") int randomNumber,
+//                                                @PathVariable("id") Long id) throws SQLException, IOException {
+//        Optional<AwardsPhoto> videoFileOptional = awardsPhotoService.getVideoFileById(id);
+//        if (videoFileOptional.isPresent()) {
+//        	AwardsPhoto videoFile = videoFileOptional.get();
+//            String filename = "video_" + randomNumber + "_" + id;
+//            byte[] fileBytes;
+//            fileBytes = videoFile.getAwardsPhoto().getBytes(id, randomNumber);
+//
+//            // Determine the media type based on the file's content
+//            String extension = determineFileExtension(fileBytes);
+//            MediaType mediaType = determineMediaType(extension);
+//
+//            // Create the resource and set headers
+//            ByteArrayResource resource = new ByteArrayResource(fileBytes);
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.setContentType(mediaType);
+//            headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename + "." + extension);
+//            return ResponseEntity.ok().headers(headers).body(resource);
+//        } else {
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
 	
 	
 }

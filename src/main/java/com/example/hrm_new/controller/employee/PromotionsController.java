@@ -5,7 +5,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -17,10 +16,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.example.hrm_new.entity.employee.Employee;
 import com.example.hrm_new.entity.employee.Promotions;
 import com.example.hrm_new.repository.employee.PromotionsRepository;
@@ -117,15 +114,15 @@ public class PromotionsController {
 			if (Promotions != null) {
 				boolean currentStatus = Promotions.isStatus();
 				Promotions.setStatus(!currentStatus);
-                service.saveOrUpdate(Promotions); // Save the updated complaints
+                service.saveOrUpdate(Promotions); 
             } else {
-                return ResponseEntity.ok(false); // Complaints with the given ID does not exist, return false
+                return ResponseEntity.ok(false); 
             }
 
-            return ResponseEntity.ok(Promotions.isStatus()); // Return the new status (true or false)
+            return ResponseEntity.ok(Promotions.isStatus()); 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(false); // Set response to false in case of an error
+                    .body(false); 
         }
     }
 
@@ -190,11 +187,9 @@ public class PromotionsController {
 	///////////////////21/////////////////////////	
 	 @PostMapping("/promotions/date")
 	    public List<Map<String, Object>> getAllVoucherBetweenDates(
-	            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-	            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
-	    ) {
+	    		 @RequestBody Map<String, Object> requestBody) {
+		    LocalDate startDate = LocalDate.parse(requestBody.get("startDate").toString(), DateTimeFormatter.ISO_DATE);
+		    LocalDate endDate = LocalDate.parse(requestBody.get("endDate").toString(), DateTimeFormatter.ISO_DATE);
 	        return repo.getAllpromotionsBetweenDates(startDate, endDate);
 	    }
 }
-
-

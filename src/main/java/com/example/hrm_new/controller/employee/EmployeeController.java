@@ -1,13 +1,8 @@
 package com.example.hrm_new.controller.employee;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.example.hrm_new.entity.employee.Complaints;
 import com.example.hrm_new.entity.employee.Employee;
 import com.example.hrm_new.repository.employee.EmployeeRepository;
 import com.example.hrm_new.service.employee.EmployeeService;
@@ -34,16 +26,16 @@ public class EmployeeController {
 	@Autowired
 	private EmployeeRepository repo;
 
-	@GetMapping("/employees/true")
-	public ResponseEntity<?> getEmployees() {
-		try {
-			List<Employee> Employees = service.listAll();
-			return ResponseEntity.ok(Employees);
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Error retrieving Employees: " + e.getMessage());
-		}
-	}
+//	@GetMapping("/employees/true")
+//	public ResponseEntity<?> getEmployees() {
+//		try {
+//			List<Employee> Employees = service.listAll();
+//			return ResponseEntity.ok(Employees);
+//		} catch (Exception e) {
+//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//					.body("Error retrieving Employees: " + e.getMessage());
+//		}
+//	}
 	
 	@GetMapping("/employees")
 	public ResponseEntity<?> getEmployeess() {
@@ -106,13 +98,17 @@ public class EmployeeController {
 			existingEmployee.setGender(Employee.getGender());
 			existingEmployee.setDob(Employee.getDob());
 			existingEmployee.setPhoneNumber(Employee.getPhoneNumber());
-			existingEmployee.setStatus(Employee.isStatus());
 			existingEmployee.setDateOfJoining(Employee.getDateOfJoining());
 			existingEmployee.setRoleId(Employee.getRoleId());
 			existingEmployee.setDesignationId(Employee.getDesignationId());
 			existingEmployee.setMarital(Employee.getMarital());
 			existingEmployee.setState(Employee.getState());
-			existingEmployee.setCompanyName(Employee.getCompanyName());
+			existingEmployee.setIfseCode(Employee.getIfseCode());
+			existingEmployee.setAccountNumber(Employee.getAccountNumber());
+			existingEmployee.setHolderName(Employee.getHolderName());
+			existingEmployee.setBankName(Employee.getBankName());
+			existingEmployee.setDepartmentId(Employee.getDepartmentId());
+			existingEmployee.setBranchName(Employee.getBranchName());
 			existingEmployee.setDescription(Employee.getDescription());
 			
 			
@@ -141,7 +137,11 @@ public class EmployeeController {
 
 	}
 
-	
+	@GetMapping("/employees/true")
+	public List<Map<String, Object>> AllcompanyDetails() {
+		return repo.AllEmployees();
+
+	}
 
 //	@PostMapping("/login")
 //	public ResponseEntity<String> login(@RequestBody Employee employee) {

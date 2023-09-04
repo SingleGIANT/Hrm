@@ -74,18 +74,18 @@ public class CompanyController {
 	  @PutMapping("/company/or/{id}")
 	    public ResponseEntity<Boolean> toggleCustomerStatus(@PathVariable(name = "id") long id) {
 	        try {
-	        	Company customer = companyservice.findById(id);
-	            if (customer != null) {
+	        	Company company = companyservice.findById(id);
+	            if (company != null) {
 	                // Customer with the given id exists, toggle the status
-	                boolean currentStatus = customer.isStatus();
-	                customer.setStatus(!currentStatus);
-	                companyservice.SaveorUpdate(customer); // Save the updated customer
+	                boolean currentStatus = company.isStatus();
+	                company.setStatus(!currentStatus);
+	                companyservice.SaveorUpdate(company); // Save the updated customer
 	            } else {
 	                // Customer with the given id does not exist, return false
 	                return ResponseEntity.ok(false);
 	            }
 
-	            return ResponseEntity.ok(customer.isStatus()); // Return the new status (true or false)
+	            return ResponseEntity.ok(company.isStatus()); // Return the new status (true or false)
 	        } catch (Exception e) {
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 	                    .body(false); // Set response to false in case of an error
@@ -150,39 +150,5 @@ public class CompanyController {
 
 	}
 	
-	@PutMapping("/company/or/{companyId}")
-
-	public ResponseEntity<Boolean> toggleComplaintsStatus(@PathVariable(name = "companyId") long companyId) {
-
-	try {
-
-	Company company = companyservice.findById(companyId);
-
-	if (company != null) {
-
-	// Toggle the status
-
-	boolean currentStatus = company.isStatus();
-
-	company.setStatus(!currentStatus);
-
-	companyservice.SaveorUpdate(company); // Save the updated company
-
-	} else {
-
-	return ResponseEntity.ok(false); // company with the given ID does not exist, return false
-
-	}
-
-	return ResponseEntity.ok(company.isStatus()); // Return the new status (true or false)
-
-	} catch (Exception e) {
-
-	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-
-	.body(false); // Set response to false in case of an error
-
-	}
-
-	}
+	
 }

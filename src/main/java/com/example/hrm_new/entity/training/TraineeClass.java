@@ -13,8 +13,7 @@ import javax.persistence.Table;
 public class TraineeClass {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	
+	@GeneratedValue(strategy = GenerationType.IDENTITY)	
 	private long traineeClassId;
 	private String trainerName;
 	private long traineeDetailsId;

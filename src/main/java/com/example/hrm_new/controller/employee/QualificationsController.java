@@ -3,13 +3,19 @@ package com.example.hrm_new.controller.employee;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.example.hrm_new.entity.employee.Qualifications;
+import com.example.hrm_new.repository.employee.QualificationRepository;
 import com.example.hrm_new.repository.employee.QualificationsRepository;
+import com.example.hrm_new.service.employee.QualificationService;
 import com.example.hrm_new.service.employee.QualificationsService;
 
 @RestController
@@ -20,36 +26,7 @@ public class QualificationsController {
 	private QualificationsService service;
 	@Autowired
 	private QualificationsRepository repo;
-//
-//	@GetMapping("/qualifications")
-//	public ResponseEntity<List<Qualifications>> getAllQualifications() {
-//	    List<Qualifications> qualificationsList = service.getAllQualifications();
-//	    for (Qualifications qualification : qualificationsList) {
-//	        String photoUrl = getImageUrl(qualification.getPhoto());
-//	        qualification.setPhoto(photoUrl);
-//	        String resumeUrl = getImageUrl(qualification.getResume());
-//	        qualification.setResume(resumeUrl);
-//	        String tenUrl = getImageUrl(qualification.getTen());
-//	        qualification.setTen(tenUrl);
-//	        String aadharUrl = getImageUrl(qualification.getAadhar());
-//	        qualification.setAadhar(aadharUrl);
-//	        String degreeUrl = getImageUrl(qualification.getDegree());
-//	        qualification.setDegree(degreeUrl);
-//	        String pannoUrl = getImageUrl(qualification.getPanno());
-//	        qualification.setPanno(pannoUrl);
-//	        String bankBookUrl = getImageUrl(qualification.getBankBook());
-//	        qualification.setBankBook(bankBookUrl);
-//	        String twelveUrl = getImageUrl(qualification.getTwelve());
-//	        qualification.setTwelve(twelveUrl);
-//	    }
-//	    return ResponseEntity.ok().body(qualificationsList);
-//	}
-//
-//
-//	private String getImageUrl(String fileName) {
-//    String serverContextPath = "/static/image/" + fileName;
-//	    return serverContextPath ;
-//	}
+
 
 	
 	@GetMapping("/qualifications")
@@ -93,7 +70,7 @@ public class QualificationsController {
 	}
 
 
-	 @GetMapping("/qualifications/view")
+	 @GetMapping("/qualifications/show")
 	    public List<HashMap<String, Object>> getAllQualificationsWithUrls() {
 	        List<Object[]> qualificationsList = repo.getAllQualificationsWithUrls();
 	        List<HashMap<String, Object>> mappedQualifications = new ArrayList<>();
@@ -121,12 +98,13 @@ public class QualificationsController {
 	        return mappedQualifications;
 	    }
 
+		@Autowired
+		private QualificationService repo1;
+	 
+	 
 
 
-	
-	
-
-		@PostMapping("/qualifications/save")
+	 @PostMapping("/qualifications/save")
 		public ResponseEntity<String> createQualification(@RequestParam("employeeId") String employeeId,
 		                                                  @RequestParam("resume") MultipartFile resumeFile,
 		                                                  @RequestParam("photo") MultipartFile photoFile,
@@ -192,10 +170,6 @@ public class QualificationsController {
 			    return null;
 			}
 	
-	
-	
-	
-	
 		 @PutMapping("/qualifications/edit/{qualificationId}")
 		    public ResponseEntity<String> updateQualification(
 		            @PathVariable Long qualificationId,
@@ -256,8 +230,16 @@ public class QualificationsController {
 
 		        return ResponseEntity.ok().body("Qualification updated successfully. Qualification ID: " + updatedQualification.getQualificationId());
 		    }
+		 
+}
 
-	
+
+
+		 
+
+		 
+		 
+		 
 	
 //	@GetMapping("/qualifications/{id}")
 //	public ResponseEntity<List<Qualifications>> getQualificationsByEmployeeId(@PathVariable("id") long employeeId) {
@@ -370,4 +352,5 @@ public class QualificationsController {
 //	        e.printStackTrace();
 //	        return null;
 //	    }
-}
+
+

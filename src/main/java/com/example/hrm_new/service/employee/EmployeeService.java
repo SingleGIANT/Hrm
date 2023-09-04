@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.hrm_new.entity.attendance.AttendanceList;
 import com.example.hrm_new.entity.employee.Employee;
 import com.example.hrm_new.repository.employee.EmployeeRepository;
 
@@ -52,6 +53,20 @@ public class EmployeeService {
 	public List<Map<String, Object>> AllEmployee() {
 		return repo.AllEmployee();
 	}
+	
+	
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 //
 //	public Employee checkEmployeeContactNumber1(long contactNo1) {
 //		return repo.checkEmployeeContactNumber1(contactNo1);

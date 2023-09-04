@@ -19,22 +19,113 @@ public class Qualification {
 	private long qualificationId;	
 	private Blob resume;	
 	private Blob photo;
+	private long aadharNO;
 	private String employeeId;
 	private Blob ten;	
 	private Blob aadhar;
-	private String highestQualification;	
+	private String highestQualification;
+	private String panCard;
 	private Blob degree;	
 	private Blob bankBook;
 	private Blob twelve;
 	private Blob panno;
-	private String url;
-
-	public String getUrl() {
-		return url;
+	private String resumeurl;
+	private String pannourl;
+	private String photourl;
+	private String tenurl;
+	private String aadharurl;
+	private String degreeurl;
+	private String bankBookurl;
+	private String twelveurl;
+	private boolean status;
+	
+	
+	public boolean isStatus() {
+		return status;
 	}
 
-	public void setUrl(String url) {
-		this.url = url;
+	public void setStatus(boolean status) {
+		this.status = status;
+	}
+
+	public long getAadharNO() {
+		return aadharNO;
+	}
+
+	public void setAadharNO(long aadharNO) {
+		this.aadharNO = aadharNO;
+	}
+
+	public String getPanCard() {
+		return panCard;
+	}
+
+	public void setPanCard(String panCard) {
+		this.panCard = panCard;
+	}
+
+	public String getResumeurl() {
+		return resumeurl;
+	}
+
+	public void setResumeurl(String resumeurl) {
+		this.resumeurl = resumeurl;
+	}
+
+	public String getPannourl() {
+		return pannourl;
+	}
+
+	public void setPannourl(String pannourl) {
+		this.pannourl = pannourl;
+	}
+
+	public String getPhotourl() {
+		return photourl;
+	}
+
+	public void setPhotourl(String photourl) {
+		this.photourl = photourl;
+	}
+
+	public String getTenurl() {
+		return tenurl;
+	}
+
+	public void setTenurl(String tenurl) {
+		this.tenurl = tenurl;
+	}
+
+	public String getAadharurl() {
+		return aadharurl;
+	}
+
+	public void setAadharurl(String aadharurl) {
+		this.aadharurl = aadharurl;
+	}
+
+	public String getDegreeurl() {
+		return degreeurl;
+	}
+
+	public void setDegreeurl(String degreeurl) {
+		this.degreeurl = degreeurl;
+	}
+
+	public String getBankBookurl() {
+		return bankBookurl;
+	}
+
+	public void setBankBookurl(String bankBookurl) {
+		this.bankBookurl = bankBookurl;
+	}
+
+	public String getTwelveurl() {
+		return twelveurl;
+	}
+
+	public void setTwelveurl(String twelveurl) {
+		this.twelveurl = twelveurl;
 	}
 
 	public long getQualificationId() {

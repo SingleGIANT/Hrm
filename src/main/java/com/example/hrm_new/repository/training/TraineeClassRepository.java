@@ -1,6 +1,7 @@
 package com.example.hrm_new.repository.training;
 
-import java.sql.Date;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -8,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.example.hrm_new.entity.project.Project;
+
 import com.example.hrm_new.entity.training.TraineeClass;
 
 public interface TraineeClassRepository extends JpaRepository<TraineeClass , Long>{
@@ -28,7 +29,7 @@ public interface TraineeClassRepository extends JpaRepository<TraineeClass , Lon
 				,nativeQuery = true)
 		List <Map<String,Object>>  allDetailsOfTraineeClass(@Param("trainee_class_id")Long trainee_class_id);
 		
-		List<TraineeClass> findByStartDateBetween(Date from, Date to);
+//		List<TraineeClass> findByStartDateBetween(Date from, Date to);
 
 		@Query(value=
 				" select section_name, count(*) as count "  
@@ -38,7 +39,23 @@ public interface TraineeClassRepository extends JpaRepository<TraineeClass , Lon
 				+ " limit 1 "
 				,nativeQuery = true)
 		 Map<String,Object>  highestCountBySection();
+		@Query(value=
+				" select tc.*,td.name "
+				+ "		 from trainee_class as tc "
+				+ "			join trainee_details as td on td.trainee_details_id=tc.trainee_details_id "
+				+ "            where tc.start_date between :fromdate and :todate"
+				,nativeQuery = true)
+		List<TraineeClass> findByStartDateBetween(@Param("fromdate")LocalDate fromdate,@Param("todate") LocalDate todate);
+		
+		
+		@Query(value=
+				" select tc.*,td.name "
+				+ "		 from trainee_class as tc "
+				+ "			join trainee_details as td on td.trainee_details_id=tc.trainee_details_id "
+				+ "            where tc.start_date between :fromdate and :todate"
+				,nativeQuery = true)
+		List<Map<String, Object>> getAllpromotionsBetweenDates(@Param("fromdate")LocalDate fromdate,@Param("todate") LocalDate todate);
 	
 	
-
+		
 }

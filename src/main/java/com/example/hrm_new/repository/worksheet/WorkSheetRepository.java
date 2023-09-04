@@ -21,8 +21,10 @@ public interface WorkSheetRepository extends JpaRepository<WorkSheet, Long>{
 
 	
 	 @Query(value=
-			 "select w.* from work_sheet as w "
-			 + " join project as p on p.project_id=w.project_id "	
+			 "select w.* , p.project_title ,e.first_name,e.last_name"
+			 + " from work_sheet as w "
+			 + " join projectss as p on p.project_id=w.project_id "
+			 + "  join employee as e on e.employee_id=w.employee_id"	
 				,nativeQuery = true)
 	List<Map<String, Object>> allWorkSheetDetails();
 	 

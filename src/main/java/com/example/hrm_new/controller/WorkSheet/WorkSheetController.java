@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.hrm_new.entity.organization.Company;
 import com.example.hrm_new.entity.project.Project;
 import com.example.hrm_new.entity.worksheet.WorkSheet;
 import com.example.hrm_new.repository.worksheet.WorkSheetRepository;
@@ -87,6 +88,29 @@ public class WorkSheetController {
 
 	}
 		
+	  @PutMapping("/workSheet/or/{workSheetId}")
+	    public ResponseEntity<Boolean> toggleCustomerStatus(@PathVariable(name = "workSheetId") long workSheetId) {
+	        try {
+	        	WorkSheet workSheet = workSheetservice.findById(workSheetId);
+	            if (workSheet != null) {
+	                // Customer with the given id exists, toggle the status
+	                boolean currentStatus = workSheet.isStatus();
+	                workSheet.setStatus(!currentStatus);
+	                workSheetservice.SaveorUpdate(workSheet); // Save the updated customer
+	            } else {
+	                // Customer with the given id does not exist, return false
+	                return ResponseEntity.ok(false);
+	            }
+
+	            return ResponseEntity.ok(workSheet.isStatus()); // Return the new status (true or false)
+	        } catch (Exception e) {
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                    .body(false); // Set response to false in case of an error
+	        }
+	    }
+
+	
+	
 	@PutMapping("/workSheet/editWorkSheet/{workSheetId}")
 
 	public ResponseEntity<WorkSheet> updateWorkSheet(@PathVariable("workSheetId") Long workSheetId, @RequestBody WorkSheet workSheetDetails) {
@@ -102,7 +126,7 @@ public class WorkSheetController {
 			}
 
 			existingWorkSheet.setModuleName(workSheetDetails.getModuleName());
-			existingWorkSheet.setEmployeeNameId(workSheetDetails.getEmployeeNameId());
+			existingWorkSheet.setEmployeeId(workSheetDetails.getEmployeeId());
 			existingWorkSheet.setFromDate(workSheetDetails.getFromDate());
 			existingWorkSheet.setToDate(workSheetDetails.getToDate());
 			existingWorkSheet.setProjectId(workSheetDetails.getProjectId());

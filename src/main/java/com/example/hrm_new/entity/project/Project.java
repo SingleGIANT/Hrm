@@ -1,24 +1,26 @@
 package com.example.hrm_new.entity.project;
 
 import java.sql.Date;
+
 import java.util.List;
 
+
 import javax.persistence.Convert;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.persistence.Table;
+import com.example.hrm_new.entity.LongListConverter;
 
-import com.example.hrm_new.entity.converter;
 
 @Entity
-@Table(name = "project")
+@Table(name = "projectss")
 public class Project {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-
 	private long projectId;
 	private String projectTitle;
 	private long customerId;
@@ -28,13 +30,61 @@ public class Project {
 	private Date fromDate;
 	private Date toDate;
 	private long totalProjectAmount;
-	private boolean status;
-	@Convert(converter = converter.class)
-	private List<Long> designationId;
+	private boolean status;	
+	@Convert(converter = LongListConverter.class)
+	private List<Long> designationId;	
+	private boolean projectStatus;	
+
 	
+	
+	public boolean isProjectStatus() {
+		return projectStatus;
+	}
+
+	public void setProjectStatus(boolean projectStatus) {
+		this.projectStatus = projectStatus;
+	}
+
+	public long getContact() {
+		return contact;
+	}
+
+	public void setContact(long contact) {
+		this.contact = contact;
+	}
+
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
+	}
+
 
 	public List<Long> getDesignationId() {
 		return designationId;
+	}
+
+	
+	
+	
+
+	public Project(long projectId, String projectTitle, long customerId, long contact, String location,
+			int totalDuration, Date fromDate, Date toDate, long totalProjectAmount, boolean status,
+			List<Long> designationId) {
+		super();
+		this.projectId = projectId;
+		this.projectTitle = projectTitle;
+		this.customerId = customerId;
+		this.contact = contact;
+		this.location = location;
+		this.totalDuration = totalDuration;
+		this.fromDate = fromDate;
+		this.toDate = toDate;
+		this.totalProjectAmount = totalProjectAmount;
+		this.status = status;
+		this.designationId = designationId;
 	}
 
 	public void setDesignationId(List<Long> designationId) {
@@ -85,22 +135,6 @@ public class Project {
 		this.customerId = customerId;
 	}
 
-	public long getContact() {
-		return contact;
-	}
-
-	public void setContact(long contact) {
-		this.contact = contact;
-	}
-
-	public String getLocation() {
-		return location;
-	}
-
-	public void setLocation(String location) {
-		this.location = location;
-	}
-
 	public int getTotalDuration() {
 		return totalDuration;
 	}
@@ -125,4 +159,13 @@ public class Project {
 		this.status = status;
 	}
 
+	@Override
+	public String toString() {
+		return "Project [projectId=" + projectId + ", projectTitle=" + projectTitle + ", customerId=" + customerId
+				+ ", contact=" + contact + ", location=" + location + ", totalDuration=" + totalDuration + ", fromDate="
+				+ fromDate + ", toDate=" + toDate + ", totalProjectAmount=" + totalProjectAmount + ", status=" + status
+				+ ", designationId=" + designationId + "]";
+	}
+
+	
 }

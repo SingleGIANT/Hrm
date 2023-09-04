@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.hrm_new.entity.customer.Customer;
 import com.example.hrm_new.entity.organization.Expense;
+import com.example.hrm_new.entity.organization.ExpenseRequest;
+import com.example.hrm_new.entity.payroll.SalaryRequest;
 import com.example.hrm_new.repository.organization.ExpenseRepository;
 import com.example.hrm_new.service.organization.ExpenseService;
 
@@ -41,7 +45,6 @@ public class ExpenseController {
 	private ExpenseRepository repo;
 
 	@GetMapping("/expense")
-
 	public ResponseEntity<?> getDetails() {
 
 		try {
@@ -87,6 +90,27 @@ public class ExpenseController {
 		return expenseService.getExpenseById(expenseId);
 
 	}
+	
+	@PutMapping("/expense/or/{id}")
+    public ResponseEntity<Boolean> toggleCustomerStatus(@PathVariable(name = "id") long id) {
+        try {
+        	Expense expense = expenseService.findById(id);
+            if (expense != null) {
+                // Customer with the given id exists, toggle the status
+                boolean currentStatus = expense.isStatus();
+                expense.setStatus(!currentStatus);
+                expenseService.SaveorUpdate(expense); // Save the updated customer
+            } else {
+                // Customer with the given id does not exist, return false
+                return ResponseEntity.ok(false);
+            }
+
+            return ResponseEntity.ok(expense.isStatus()); // Return the new status (true or false)
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(false); // Set response to false in case of an error
+        }
+    }
 
 	@PutMapping("/expense/editdeexpense/{expenseId}")
 
@@ -178,14 +202,32 @@ public class ExpenseController {
 		return expenselist;
 
 	}
+//	
+//	@PostMapping("/expense/date")
+//	public List<Map<String, Object>> allExpenseDetailsByDate(
+//			@RequestBody Map<String, Object> requestBody) {
+//		LocalDate startdate = LocalDate.parse(requestBody.get("startdate").toString(), DateTimeFormatter.ISO_DATE);
+//		LocalDate enddate = LocalDate.parse(requestBody.get("enddate").toString(), DateTimeFormatter.ISO_DATE);
+//		return repo.allExpenseDetailsByDate(startdate,enddate);
+//	}
+	
 	
 	@PostMapping("/expense/date")
 	public List<Map<String, Object>> allExpenseDetailsByDate(
-			@RequestBody Map<String, Object> requestBody) {
-		LocalDate date = LocalDate.parse(requestBody.get("date").toString(), DateTimeFormatter.ISO_DATE);
-		return repo.allExpenseDetailsByDate(date);
+	        @RequestBody Map<String, Object> requestBody) {
+	    LocalDate startdate = LocalDate.parse(requestBody.get("startdate").toString(), DateTimeFormatter.ISO_DATE);
+	    LocalDate enddate = LocalDate.parse(requestBody.get("enddate").toString(), DateTimeFormatter.ISO_DATE);
+	    return repo.allExpenseDetailsByDate(startdate, enddate);
 	}
+
 	
+
+	   @PostMapping("/expense/month")
+	    public List<Map<String, Object>> totalExpenseByYearAndMonth(@RequestBody ExpenseRequest request) {
+	        Integer year = request.getYear();
+	        String monthname = request.getMonthname();
+	        return repo.findByYearAndMonth(year, monthname);
+	}
 	@GetMapping("/currentdateexpense")
 	public List<Map<String, Object>> dailyExpenseByDate(){
 		return expenseService.dailyExpenseByCurrentDate();
@@ -207,38 +249,5 @@ public class ExpenseController {
 	public List<Map<String, Object>> yearlyexpense(){
 		return repo.yearlyExpense();
 	}
-	@PutMapping("/expense/or/{expenseId}")
-
-	public ResponseEntity<Boolean> toggleExpenseStatus(@PathVariable(name = "expenseId") long expenseId) {
-
-	try {
-
-		Expense expense = expenseService.findById(expenseId);
-
-	if (expense != null) {
-
-	// Toggle the status
-
-	boolean currentStatus = expense.isStatus();
-
-	expense.setStatus(!currentStatus);
-
-	expenseService.SaveorUpdate(expense); // Save the updated company
-
-	} else {
-
-	return ResponseEntity.ok(false); // company with the given ID does not exist, return false
-
-	}
-
-	return ResponseEntity.ok(expense.isStatus()); // Return the new status (true or false)
-
-	} catch (Exception e) {
-
-	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-
-	.body(false); // Set response to false in case of an error
-
-	}
-	}
+	
 }

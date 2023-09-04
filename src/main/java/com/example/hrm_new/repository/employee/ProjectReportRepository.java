@@ -15,20 +15,20 @@ public interface ProjectReportRepository extends JpaRepository<ProjectReport, Lo
 	
 	@Query(value = "select e.first_name ,e.last_name ,p.*,pp.project_title"
 			+ "			from projectreport as p"
-			+ "  join project as pp on pp.project_id=p.project_id"
+			+ "  join projectss as pp on pp.project_id=p.project_id"
 			+ "		 join employee as e on e.employee_id=p.employee_id;", nativeQuery = true)
 	List<Map<String, Object>> getAllProjectWork();
 	
 	@Query(value = "select e.first_name ,e.last_name ,p.*,pp.project_title"
 			+ "from projectreport as p"
-			+ "  join project as pp on pp.project_id=p.project_id"
+			+ "  join projectss as pp on pp.project_id=p.project_id"
 			+ "  join employee as e on e.employee_id=p.employee_id"
 			+  "  where p.employee_id=:employee_id", nativeQuery = true)
 	List<Map<String, Object>> Allprojectreport(@Param("employee_id") Long employee_id);
 	
 	@Query(value = "select e.first_name ,e.last_name ,p.*,pp.project_title"
 			+ "						from projectreport as p"
-			+ "			  join project as pp on pp.project_id=p.project_id"
+			+ "			  join projectss as pp on pp.project_id=p.project_id"
 			+ "					 join employee as e on e.employee_id=p.employee_id"
 			+ "			where p.extended_date between :startDate and :endDate", nativeQuery = true)
 	List<Map<String, Object>> getAllpromotionsBetweenDates(@Param("startDate") LocalDate startDate,@Param("endDate") LocalDate endDate);
@@ -36,7 +36,7 @@ public interface ProjectReportRepository extends JpaRepository<ProjectReport, Lo
 	
 	@Query(value = "select e.first_name ,e.last_name ,p.*,pp.project_title"
 			+ "							from projectreport as p"
-			+ "					  join project as pp on pp.project_id=p.project_id"
+			+ "					  join projectss as pp on pp.project_id=p.project_id"
 			+ "					 join employee as e on e.employee_id=p.employee_id"
 			+ "					where p.extended_date =CURDATE();", nativeQuery = true)
 	List<Map<String, Object>> getPurchaseAndSales();

@@ -59,8 +59,8 @@ public class PayRollService {
 		return repo.allDetailsOfPayRoll(payRollId);
 		
 	}
-	public 	List <Map<String,Object>>  findAllByEmployeeId(Long employee_name_id){
-		return repo.DetailsOfPayRollByEmployeeId(employee_name_id);
+	public 	List <Map<String,Object>>  findAllByEmployeeId(Long employee_id){
+		return repo.DetailsOfPayRollByEmployeeId(employee_id);
 		
 	}
 //	public 	List <Map<String,Object>>  highestSlaryByMonth(Month month){
